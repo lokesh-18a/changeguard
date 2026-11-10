@@ -55,6 +55,14 @@ Outputs go to `out/`: `changeguard_results.xlsx` (summary, impact, conflicts, te
 
 Set `PLANTED_BUGS` to `False` to see every test pass.
 
+## Web interface
+
+```bash
+streamlit run app.py
+```
+
+Write or pick a change, press **Analyze change**, and see the verdict, the rule graph with affected rules highlighted, conflicts, tests, traceability, the AI report and token usage. The sidebar toggles offline mode and the two planted bugs. **Download evidence pack** saves the Excel workbook.
+
 ## MCP server
 
 ChangeGuard's tools are exposed over the Model Context Protocol, so any MCP-capable agent can use them:
@@ -88,6 +96,5 @@ Tools: `list_rules`, `impact_of_change`, `generate_tests`, `run_change` (all det
 
 ## Roadmap
 
-- Streamlit interface with the highlighted rule graph
 - Docker image and AWS deployment
 - Extract the rule graph from real Guidewire or Duck Creek configuration

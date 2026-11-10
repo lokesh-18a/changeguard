@@ -112,7 +112,8 @@ class LLM:
         return _offline_explain(facts)
 
     def _bedrock_explain(self, facts: dict) -> str:
-        prompt = ("Write a short impact report (under 220 words) for a Flarre delivery analyst. "
+        prompt = ("Write a short impact report (under 220 words) for a delivery analyst at Flarre.AI "
+                  "(spell the company exactly 'Flarre'). "
                   "Sections: Summary, Must fix before release, Test results, Recommendation. "
                   "Use only these facts; cite rule and test IDs; do not add numbers.\n\n" + json.dumps(facts, indent=1))
         t0 = time.time()
@@ -156,6 +157,8 @@ def _normalise(cr: ChangeRequest) -> ChangeRequest:
     """Deterministic clean-up of common model slips, then a completeness check."""
     if cr.price_pct_of_od is not None and cr.price_pct_of_od > 1:
         cr.price_pct_of_od = cr.price_pct_of_od / 100
+    if not cr.addon_code and cr.addon_name:  # model skipped the code: derive it, e.g. Zero Depreciation -> ZD
+        cr.addon_code = "".join(w[0] for w in re.findall(r"[A-Za-z0-9]+", cr.addon_name))
     if cr.addon_code:
         cr.addon_code = re.sub(r"[^A-Z0-9]", "", cr.addon_code.upper())[:6] or "ADDON"
     cr.excluded_causes = [c.strip().lower().replace(" ", "_") for c in cr.excluded_causes] or ["theft", "total_loss"]

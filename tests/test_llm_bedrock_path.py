@@ -45,3 +45,12 @@ def test_invalid_rule_falls_back_to_offline(monkeypatch):
     rep = pipeline.run("Raise the compulsory deductible for cars from 1,000 to 1,500 cc to Rs 1,500")
     assert rep.change.rule_id == "CLM-DEDUCT"          # offline stub took over
     assert any("bedrock failed" in c["backend"] for c in rep.llm_calls)
+
+
+def test_addon_code_derived_when_missing(monkeypatch):
+    data = {"kind": "new_addon", "addon_name": "Zero Depreciation", "max_car_age_years": 5,
+            "price_pct_of_od": 0.15, "claim_limit_per_year": 2, "allow_midterm": True}
+    llm = make_llm([tool_reply(data), text_reply("ok")])
+    monkeypatch.setattr(pipeline, "LLM", lambda offline=False: llm)
+    rep = pipeline.run("Zero Dep for cars up to 5 years, 15% of OD, 2 claims, mid-term allowed")
+    assert rep.change.addon_code == "ZD" and any(i.rule_id == "ZD-ELIG" for i in rep.impact)
