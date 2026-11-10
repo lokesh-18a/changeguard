@@ -21,6 +21,9 @@ class Rule(BaseModel):
     outputs: list[str] = Field(default_factory=list)
     params: dict[str, Any] = Field(default_factory=dict)
     attributes: dict[str, Any] = Field(default_factory=dict)
+    exercise: list[dict[str, Any]] = Field(default_factory=list, description="How tests can exercise this rule's limits")
+    assumptions: list[dict[str, Any]] = Field(default_factory=list, description="What this rule takes for granted")
+    tags: list[str] = Field(default_factory=list, description="Capabilities a new rule introduces")
     is_new: bool = False
 
 

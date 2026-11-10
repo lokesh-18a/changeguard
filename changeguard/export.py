@@ -46,8 +46,11 @@ def to_excel(rep: RunReport, path: Path) -> Path:
         ["Passed", rep.passed],
         ["Failed", len(rep.results) - rep.passed],
         ["Stale regression tests", sum(t.stale for t in rep.tests)],
+        ["Mutation score (all random defects)", f"{rep.mutation.get('score', 0):.0%} of {rep.mutation.get('mutants', 0)}" if rep.mutation else "not run"],
+        ["Typical-case suite mutation score", f"{rep.mutation.get('baseline_score', 0):.0%}" if rep.mutation else "not run"],
+        ["Report checked by critic", rep.critic.get("final", "")],
         ["Language model", rep.backend],
-    ], [28, 90])
+    ], [34, 90])
 
     _sheet(wb, "Impact", ["Rule", "Area", "Name", "Status", "Distance", "Why (dependency path)"],
            [[i.rule_id, i.area, i.name, i.status, i.distance, rep.paths[i.rule_id]] for i in rep.impact],
@@ -68,13 +71,22 @@ def to_excel(rep: RunReport, path: Path) -> Path:
     for row in ws.iter_rows(min_row=2):
         row[9].fill = GREEN if row[9].value == "PASS" else RED
 
+    if rep.mutation:
+        m = rep.mutation
+        ws = _sheet(wb, "Mutation audit", ["Mutant", "Kind", "Defect injected", "Caught by ChangeGuard", "Caught by typical suite", "Caught by tests"],
+                    [[mid, m["kinds"][mid], m["descriptions"][mid], "yes" if mid in m["killers"] else "NO",
+                      "yes" if mid in m["baseline_killers"] else "no", ", ".join(m["killers"].get(mid, [])[:8])]
+                     for mid in sorted(m["descriptions"])], [9, 12, 46, 20, 22, 60])
+        for row in ws.iter_rows(min_row=2):
+            row[3].fill = GREEN if row[3].value == "yes" else RED
+
     trace_rows = []
     for rid, text in rep.requirements.items():
         tests = [t for t in rep.tests if t.requirement == rid]
         rules = sorted({r for t in tests for r in t.rules})
         trace_rows.append([rid, text, ", ".join(rules), ", ".join(t.id for t in tests),
                            f"{sum(res[t.id].passed for t in tests)}/{len(tests)} passed" if tests else "NO TESTS"])
-    _sheet(wb, "Traceability", ["Requirement", "Text", "Rules", "Tests", "Status"], trace_rows, [12, 60, 40, 30, 16])
+    _sheet(wb, "Traceability", ["Requirement (rule)", "Text", "Rules", "Tests", "Status"], trace_rows, [18, 60, 30, 40, 16])
 
     _sheet(wb, "AI usage", ["Step", "Backend", "Model", "Input tokens", "Output tokens", "Seconds"],
            [[c["step"], c["backend"], c["model"], c["input_tokens"], c["output_tokens"], c["seconds"]] for c in rep.llm_calls],

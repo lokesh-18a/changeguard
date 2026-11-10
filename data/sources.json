@@ -1,0 +1,62 @@
+{
+ "note": "Public documents published by insurers and the regulator. They are downloaded on demand by scripts/fetch_sources.py and are not stored in this repository.",
+ "documents": [
+  {
+   "id": "raheja_pc",
+   "insurer": "Raheja QBE General Insurance",
+   "type": "policy wording",
+   "title": "Private Car Package Policy wording (UIN IRDAN141RP0001V02200809), includes Zero Depreciation add-on",
+   "url": "https://www.rahejaqbe.com/uploads/images/private-car-package/pdf/download/private-car-package-wording-V03.pdf"
+  },
+  {
+   "id": "liberty_pc3y",
+   "insurer": "Liberty General Insurance",
+   "type": "policy wording",
+   "title": "Private Car Package Policy - 3 Years wording (UIN IRDAN150RPMT0007V02202425), includes Depreciation Cover",
+   "url": "https://www.libertyinsurance.in/Docx/Private%20Car%20Package%20-%203%20Years_Policy%20Wordings%2012.12.2025_UIN%20-%20IRDAN150RPMT0007V02202425.pdf"
+  },
+  {
+   "id": "usgi_pc",
+   "insurer": "Universal Sompo General Insurance",
+   "type": "policy wording",
+   "title": "Motor Private Car Package Policy wording (UIN IRDAN134RP0004V03200708), includes Depreciation Waiver",
+   "url": "https://www.universalsompo.com/assets/file/motor-private-car/motor-private-car-policy-wordings.pdf"
+  },
+  {
+   "id": "iffco_nildep",
+   "insurer": "IFFCO Tokio General Insurance",
+   "type": "add-on wording",
+   "title": "Nil Depreciation Cover for Private Car (UIN IRDAN106RP0005V01200001/A0003V01202425)",
+   "url": "https://www.iffcotokio.co.in/content/dam/iffcotokio/policy-wordings/motor/nil-depreciation-cover-private-car-act-comprehensive-policies.pdf",
+   "single_cover": true
+  },
+  {
+   "id": "bajaj_addons",
+   "insurer": "Bajaj Allianz General Insurance",
+   "type": "add-on wording",
+   "title": "Private Car Package Policy add-on covers, including Depreciation Shield (UIN IRDAN113RP0025V01200102/A0001V01200910)",
+   "url": "https://bajajallianz.com/download-documents/motor-insurance/add-on/Private-Car-Package-Policy-Add-on-Covers.pdf"
+  },
+  {
+   "id": "usgi_addons",
+   "insurer": "Universal Sompo General Insurance",
+   "type": "add-on wording",
+   "title": "Motor Private Car add-on covers",
+   "url": "https://www.universalsompo.com/assets/file/motor-private-car/motor-private-car-addon.pdf"
+  },
+  {
+   "id": "hdfc_claimform",
+   "insurer": "HDFC ERGO General Insurance",
+   "type": "claim form",
+   "title": "Motor claim form",
+   "url": "https://www.windshieldexperts.com/wp-content/themes/windshield/assets/pdfs/HDFC_MotorClaimform.pdf"
+  },
+  {
+   "id": "edelweiss_claimform",
+   "insurer": "Edelweiss (Zuno) General Insurance",
+   "type": "claim form",
+   "title": "Motor claim form",
+   "url": "https://www.windshieldexperts.com/wp-content/themes/windshield/assets/pdfs/Edelweiss_Motor_Claim_Form.pdf"
+  }
+ ]
+}

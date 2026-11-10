@@ -1,0 +1,274 @@
+{
+ "note": "Labelled change requests. 'gold' is the correct structured change; 'gold_impact' is the set of rules an analyst would review or re-test, labelled by hand from business reasoning before running the tool. Add-on codes may differ (the benchmark accepts any code); rule IDs in gold_impact use the gold code.",
+ "changes": [
+  {
+   "id": "B01",
+   "text": "Introduce a Zero Depreciation add-on for private cars up to 5 years old, priced at 15% of the own-damage premium, limited to 2 claims per policy year. Customers can add it mid-term.",
+   "gold": {
+    "kind": "new_addon",
+    "addon_code": "ZD",
+    "max_car_age_years": 5,
+    "price_pct_of_od": 0.15,
+    "claim_limit_per_year": 2,
+    "allow_midterm": true
+   },
+   "gold_impact": [
+    "ZD-ELIG",
+    "ZD-PRICE",
+    "ZD-CLAIM",
+    "ZD-RENEW",
+    "ZD-MIDTERM",
+    "BIL-ENDORSE",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "DOC-WORDING",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "BIL-CANCEL-REFUND",
+    "REN-AGE"
+   ]
+  },
+  {
+   "id": "B02",
+   "text": "Launch an Engine Protect cover for cars under 3 years old. It costs 10% of the own damage premium and pays for one claim a year.",
+   "gold": {
+    "kind": "new_addon",
+    "addon_code": "EP",
+    "max_car_age_years": 3,
+    "price_pct_of_od": 0.1,
+    "claim_limit_per_year": 1,
+    "allow_midterm": false
+   },
+   "gold_impact": [
+    "EP-ELIG",
+    "EP-PRICE",
+    "EP-CLAIM",
+    "EP-RENEW",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "DOC-WORDING",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "BIL-CANCEL-REFUND",
+    "REN-AGE"
+   ]
+  },
+  {
+   "id": "B03",
+   "text": "We want a Return to Invoice add-on: vehicles up to 3 years, premium 8 percent of OD, maximum one claim, and customers may buy it in the middle of the policy year.",
+   "gold": {
+    "kind": "new_addon",
+    "addon_code": "RTI",
+    "max_car_age_years": 3,
+    "price_pct_of_od": 0.08,
+    "claim_limit_per_year": 1,
+    "allow_midterm": true
+   },
+   "gold_impact": [
+    "RTI-ELIG",
+    "RTI-PRICE",
+    "RTI-CLAIM",
+    "RTI-RENEW",
+    "RTI-MIDTERM",
+    "BIL-ENDORSE",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "DOC-WORDING",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "BIL-CANCEL-REFUND",
+    "REN-AGE"
+   ]
+  },
+  {
+   "id": "B04",
+   "text": "Nil depreciation cover for vehicles not older than 7 years. Premium is 20% of own-damage premium, two claims allowed per year. It cannot be added mid-term.",
+   "gold": {
+    "kind": "new_addon",
+    "addon_code": "ND",
+    "max_car_age_years": 7,
+    "price_pct_of_od": 0.2,
+    "claim_limit_per_year": 2,
+    "allow_midterm": false
+   },
+   "gold_impact": [
+    "ND-ELIG",
+    "ND-PRICE",
+    "ND-CLAIM",
+    "ND-RENEW",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "DOC-WORDING",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "BIL-CANCEL-REFUND",
+    "REN-AGE"
+   ]
+  },
+  {
+   "id": "B05",
+   "text": "Key Replacement cover for cars up to 10 years old at 5% of the OD premium, one claim per policy year; can be added during the year.",
+   "gold": {
+    "kind": "new_addon",
+    "addon_code": "KR",
+    "max_car_age_years": 10,
+    "price_pct_of_od": 0.05,
+    "claim_limit_per_year": 1,
+    "allow_midterm": true
+   },
+   "gold_impact": [
+    "KR-ELIG",
+    "KR-PRICE",
+    "KR-CLAIM",
+    "KR-RENEW",
+    "KR-MIDTERM",
+    "BIL-ENDORSE",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "DOC-WORDING",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "BIL-CANCEL-REFUND",
+    "REN-AGE"
+   ]
+  },
+  {
+   "id": "B06",
+   "text": "Raise the compulsory deductible for cars from 1,000 to 1,500 cc to Rs 1,500.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "CLM-DEDUCT",
+    "param_path": [
+     "by_band",
+     "1000_1500"
+    ],
+    "new_value": 1500
+   },
+   "gold_impact": [
+    "CLM-DEDUCT",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "DOC-SCHEDULE"
+   ]
+  },
+  {
+   "id": "B07",
+   "text": "Increase the compulsory deductible for cars above 1500cc to INR 2,500.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "CLM-DEDUCT",
+    "param_path": [
+     "by_band",
+     "above_1500"
+    ],
+    "new_value": 2500
+   },
+   "gold_impact": [
+    "CLM-DEDUCT",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT",
+    "DOC-SCHEDULE"
+   ]
+  },
+  {
+   "id": "B08",
+   "text": "GST on motor premium changes to 12%.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "RAT-GST",
+    "param_path": [
+     "rate"
+    ],
+    "new_value": 0.12
+   },
+   "gold_impact": [
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE"
+   ]
+  },
+  {
+   "id": "B09",
+   "text": "Roadside assistance add-on price goes up to Rs 299 a year.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "RAT-ADDON-RSA",
+    "param_path": [
+     "flat_premium"
+    ],
+    "new_value": 299
+   },
+   "gold_impact": [
+    "RAT-ADDON-RSA",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE"
+   ]
+  },
+  {
+   "id": "B10",
+   "text": "Treat a claim as a constructive total loss when repair cost exceeds 70% of the IDV.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "CLM-TOTAL-LOSS",
+    "param_path": [
+     "threshold"
+    ],
+    "new_value": 0.7
+   },
+   "gold_impact": [
+    "CLM-TOTAL-LOSS",
+    "CLM-PAYOUT",
+    "DOC-SETTLEMENT"
+   ]
+  },
+  {
+   "id": "B11",
+   "text": "Third-party premium for private cars between 1,000 and 1,500 cc is revised to Rs 3,600.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "RAT-TP-PREM",
+    "param_path": [
+     "premium_by_band",
+     "1000_1500"
+    ],
+    "new_value": 3600
+   },
+   "gold_impact": [
+    "RAT-TP-PREM",
+    "RAT-TOTAL",
+    "RAT-GST",
+    "BIL-ANNUAL",
+    "DOC-SCHEDULE",
+    "BIL-CANCEL-REFUND"
+   ]
+  },
+  {
+   "id": "B12",
+   "text": "Comprehensive cover will no longer be offered for cars older than 12 years.",
+   "gold": {
+    "kind": "modify_parameter",
+    "rule_id": "UW-MAX-AGE",
+    "param_path": [
+     "max_age"
+    ],
+    "new_value": 12
+   },
+   "gold_impact": [
+    "UW-MAX-AGE",
+    "REN-AGE"
+   ]
+  }
+ ]
+}

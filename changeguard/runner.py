@@ -7,16 +7,18 @@ from .models import TestCase, TestResult
 from .testgen import COMPARE
 
 
-def run_tests(cat: Catalog, tests: list[TestCase]) -> list[TestResult]:
+def run_tests(cat: Catalog, tests: list[TestCase], ops: dict | None = None) -> list[TestResult]:
+    """`ops` lets the mutation auditor run the same tests against a mutated system."""
     results = []
     for t in tests:
         try:
-            raw = engine.run(cat, t.kind, t.inputs)
+            raw = engine.run(cat, t.kind, t.inputs, ops)
             actual = {k: raw[k] for k in COMPARE[t.kind] if k in raw}
             diffs = [k for k in t.expected if t.expected[k] != actual.get(k)]
             note = "" if not diffs else "Mismatch in " + ", ".join(
                 f"{k}: expected {t.expected[k]}, got {actual.get(k)}" for k in diffs)
             results.append(TestResult(test_id=t.id, passed=not diffs, expected=t.expected, actual=actual, note=note))
         except Exception as exc:  # a crash is a failure, not a stop
-            results.append(TestResult(test_id=t.id, passed=False, expected=t.expected, actual=None, note=f"Error: {exc}"))
+            results.append(TestResult(test_id=t.id, passed=False, expected=t.expected, actual=None,
+                                      note=f"Error: {type(exc).__name__}: {exc}"))
     return results

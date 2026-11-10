@@ -1,17 +1,26 @@
-"""Test design: turns a change into concrete test cases, deterministically.
+"""Test design, driven entirely by the rule catalog.
 
-Techniques: boundary values (just below, at, just above each limit),
-equivalence classes (one typical case per group), exclusions, and
-re-checking the stored regression suite for tests the change made stale.
+Every rule can declare how tests exercise it (its `exercise` list): which parameter holds
+a limit, which input moves across that limit, and which operation (quote, mid-term
+charge, claim, renewal) shows the effect. From that, the designer derives tests with
+standard techniques, for whichever rules a change touches:
+
+  boundary value     just below, at, and just above every limit or band edge
+  equivalence class  one typical case per rule
+  exclusion          one case per excluded category
+  range              first, middle and last value of a range
+  rounding probe     a typical case with irregular amounts, so rounding slips show
+
 Expected results always come from the oracle, never from the language model.
+Nothing here is specific to one add-on: a new rule with an `exercise` entry gets tests.
 """
 from __future__ import annotations
 
 import json
 
 from . import oracle
-from .catalog import DATA, Catalog
-from .models import ChangeRequest, TestCase
+from .catalog import DATA, Catalog, addon_code
+from .models import ChangeRequest, ImpactItem, TestCase
 
 BASE_CAR = {"ex_showroom_price": 800_000, "engine_cc": 1200, "claim_free_years": 1}
 DAMAGE = [{"name": "front bumper", "type": "plastic", "cost": 10_000},
@@ -25,78 +34,94 @@ COMPARE = {
 }
 
 
-def requirements_for(change: ChangeRequest) -> dict[str, str]:
-    if change.kind != "new_addon":
-        return {"R1": change.summary}
-    reqs = {
-        "R1": f"Available only for cars up to {change.max_car_age_years:g} years old at policy start.",
-        "R2": f"Priced at {change.price_pct_of_od:.0%} of the own-damage premium.",
-        "R3": f"No depreciation deducted for up to {change.claim_limit_per_year} claims per policy year.",
-        "R4": f"Not applicable to: {', '.join(change.excluded_causes)}.",
-        "R6": "Dropped at renewal once the car is older than the age limit.",
-    }
-    if change.allow_midterm:
-        reqs["R5"] = "Can be added mid-term, charged only for the remaining months."
-    return dict(sorted(reqs.items()))
+def requirements_for(cat: Catalog, new_ids: list[str], changed_ids: list[str]) -> dict[str, str]:
+    """One requirement per new or changed rule, in the rule's own words."""
+    return {rid: cat.get(rid).description for rid in list(new_ids) + list(changed_ids)}
+
+
+def _template(op: str, addon: str | None) -> dict:
+    t = {"quote": {**BASE_CAR, "car_age": 2.0, "addons": [addon] if addon else []},
+         "midterm": {**BASE_CAR, "car_age": 2.0, "addon": addon, "month_added": 7},
+         "claim": {**BASE_CAR, "car_age": 3.5, "cause": "accident", "claim_number": 1, "parts": DAMAGE},
+         "renewal": {**BASE_CAR, "car_age": 3.0, "had_claim": False}}[op]
+    if addon and op in ("claim", "renewal"):
+        t["addon"] = addon
+    return t
+
+
+def _round(x, step):
+    return round(x, 2) if isinstance(step, float) else int(x)
+
+
+def _points(cat: Catalog, rule, spec) -> list[tuple[object, str, str]]:
+    """(value, technique, label) for one exercise spec."""
+    step = spec.get("step", 1)
+    off = spec.get("offset", 0)
+    if spec.get("typical"):
+        return [(None, "equivalence class", "typical case"), (None, "rounding probe", "irregular amounts")]
+    if "values" in spec:
+        return [(v, "equivalence class", f"{spec['input']} = {v}") for v in spec["values"]]
+    if spec.get("categorical"):
+        return [(c, "exclusion", f"excluded: {c}") for c in rule.params[spec["param"]]]
+    if spec.get("range"):
+        lo, hi = rule.params[spec["param"]]
+        return [(lo, "boundary value", "first"), ((lo + hi) // 2 + 1, "equivalence class", "middle"), (hi, "boundary value", "last")]
+    raw = rule.params[spec["param"]]
+    if spec.get("via"):                                   # band names resolved through another rule
+        vrule, vparam = spec["via"].split(".")
+        raw = cat.param(vrule, vparam)
+    pts = []
+    if isinstance(raw, list) and raw and isinstance(raw[0], list):        # [[upper, value], ...]
+        for upper, _ in raw[:-1]:
+            pts += [(_round(upper + off, step), "boundary value", f"at band edge {upper}"),
+                    (_round(upper + step + off, step), "boundary value", f"just above {upper}")]
+    elif isinstance(raw, list):                                           # slab indexed by count
+        pts += [(i, "boundary value", f"{spec['input']} = {i}") for i in range(len(raw) + 1)]
+    elif isinstance(raw, (int, float)):                                   # a single limit
+        pts += [(_round(raw - step + off, step), "boundary value", f"just below limit {raw:g}"),
+                (_round(raw + off, step), "boundary value", f"at limit {raw:g}"),
+                (_round(raw + step + off, step), "boundary value", f"just above limit {raw:g}")]
+    return pts
+
+
+def generate(cat: Catalog, change: ChangeRequest, impact: list[ImpactItem]) -> list[TestCase]:
+    addon = addon_code(change) if change.kind == "new_addon" else None
+    touched = [i.rule_id for i in impact]
+    tests: list[TestCase] = []
+    seen: set[str] = set()
+    for rid in touched:
+        rule = cat.get(rid)
+        req = rid
+        for spec in rule.exercise:
+            for op in spec["ops"]:
+                if op == "midterm" and not addon:
+                    continue
+                for value, technique, label in _points(cat, rule, spec):
+                    inputs = _template(op, addon)
+                    if technique == "rounding probe":   # amounts that leave fractions, so rounding slips show
+                        inputs["ex_showroom_price"] = 812_347
+                        if "parts" in inputs:
+                            inputs["parts"] = [{**p, "cost": p["cost"] + 3 + 4 * i} for i, p in enumerate(inputs["parts"])]
+                    if value is not None:
+                        inputs[spec["input"]] = value
+                    key = op + json.dumps(inputs, sort_keys=True)
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    exp = oracle.expected(cat, op, inputs)
+                    tests.append(TestCase(
+                        id=f"GT-{len(tests) + 1:02d}", kind=op, technique=technique, requirement=req, rules=[rid],
+                        title=f"{rid} via {op}: {label}" + (f" ({spec['input']} = {value})" if value is not None and label.startswith(("at", "just", "first", "last", "middle")) else ""),
+                        inputs=inputs, expected={k: exp[k] for k in COMPARE[op] if k in exp}))
+    return tests
+
+
+def i_status(impact: list[ImpactItem], rid: str) -> str:
+    return next((i.status for i in impact if i.rule_id == rid), "")
 
 
 def _subset(result: dict, kind: str) -> dict:
     return {k: result[k] for k in COMPARE[kind] if k in result}
-
-
-def generate(cat: Catalog, change: ChangeRequest) -> list[TestCase]:
-    if change.kind != "new_addon":
-        return []
-    code = (change.addon_code or "ADDON").upper()
-    max_age = change.max_car_age_years
-    limit = change.claim_limit_per_year
-    reqs = requirements_for(change)
-    tests: list[TestCase] = []
-
-    def add(title, kind, technique, req, rules, inputs):
-        exp = _subset(oracle.expected(cat, kind, inputs), kind)
-        tests.append(TestCase(id=f"GT-{len(tests) + 1:02d}", title=title, kind=kind, technique=technique,
-                              requirement=req, rules=rules, inputs=inputs, expected=exp))
-
-    # R1 eligibility: boundary values around the age limit
-    for age, label in [(round(max_age - 0.1, 2), "just below"), (max_age, "exactly at"), (round(max_age + 0.1, 2), "just above")]:
-        add(f"Quote with {code}, car {label} the {max_age:g}-year limit ({age} yrs)", "quote", "boundary value",
-            "R1", [f"{code}-ELIG", f"{code}-PRICE"], {**BASE_CAR, "car_age": age, "addons": [code]})
-    # R1 / R2 equivalence classes
-    add(f"Quote with {code}, typical 2-year-old car", "quote", "equivalence class", "R2",
-        [f"{code}-PRICE", "RAT-TOTAL", "RAT-GST"], {**BASE_CAR, "car_age": 2.0, "addons": [code]})
-    add(f"Quote with {code}, old car (9 yrs) is refused", "quote", "equivalence class", "R1",
-        [f"{code}-ELIG"], {**BASE_CAR, "car_age": 9.0, "addons": [code]})
-    add(f"Quote with {code} and maximum NCB (5 claim-free years)", "quote", "equivalence class", "R2",
-        [f"{code}-PRICE", "RAT-NCB", "RAT-OD-PREM"], {**BASE_CAR, "car_age": 2.0, "claim_free_years": 5, "addons": [code]})
-
-    # R5 mid-term addition: first, middle, last month
-    if change.allow_midterm:
-        for m in (1, 7, 12):
-            add(f"Add {code} mid-term in month {m}", "midterm", "boundary value" if m in (1, 12) else "equivalence class",
-                "R5", [f"{code}-MIDTERM", "BIL-ENDORSE"], {**BASE_CAR, "car_age": 2.0, "addon": code, "month_added": m})
-
-    # R3 claim limit: boundary on claim count
-    for n in (1, limit, limit + 1):
-        add(f"Claim number {n} with {code} (limit {limit})", "claim", "boundary value", "R3",
-            [f"{code}-CLAIM", "CLM-PAYOUT", "CLM-DEP-PARTS"],
-            {**BASE_CAR, "car_age": 3.5, "addon": code, "claim_number": n, "cause": "accident", "parts": DAMAGE})
-    add(f"Claim with {code} on a car exactly {max_age:g} years old", "claim", "boundary value", "R1",
-        [f"{code}-ELIG", f"{code}-CLAIM"],
-        {**BASE_CAR, "car_age": max_age, "addon": code, "claim_number": 1, "cause": "accident", "parts": DAMAGE})
-
-    # R4 exclusions
-    add(f"Theft claim with {code}: depreciation still deducted", "claim", "exclusion", "R4",
-        [f"{code}-CLAIM"], {**BASE_CAR, "car_age": 3.5, "addon": code, "claim_number": 1, "cause": "theft", "parts": DAMAGE})
-    add(f"Total loss with {code}: pays IDV minus deductible", "claim", "exclusion", "R4",
-        [f"{code}-CLAIM", "CLM-TOTAL-LOSS"],
-        {**BASE_CAR, "car_age": 3.5, "addon": code, "claim_number": 1, "cause": "total_loss", "parts": DAMAGE})
-
-    # R6 renewal: before, exactly at, and past the limit after ageing one year
-    for start, label in [(max_age - 1.5, "stays under"), (max_age - 1.0, "reaches exactly"), (max_age - 0.5, "goes past")]:
-        add(f"Renewal: car {label} the limit ({start:g} -> {start + 1:g} yrs)", "renewal", "boundary value", "R6",
-            [f"{code}-RENEW", "REN-AGE"], {**BASE_CAR, "car_age": start, "addon": code, "had_claim": False})
-    return tests
 
 
 def load_regression(cat_now: Catalog) -> list[TestCase]:

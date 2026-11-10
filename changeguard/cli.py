@@ -16,9 +16,11 @@ def main():
     ap.add_argument("request", nargs="?", default=DEFAULT)
     ap.add_argument("--offline", action="store_true", help="use the rule-based stub instead of Amazon Bedrock")
     ap.add_argument("--out", default="out")
+    ap.add_argument("--mutants", type=int, default=None, help="random sample size; default: all mutants; 0: skip")
+    ap.add_argument("--seed", type=int, default=7)
     a = ap.parse_args()
 
-    rep = run(a.request, offline=a.offline)
+    rep = run(a.request, offline=a.offline, mutants=a.mutants, seed=a.seed)
     out = Path(a.out)
     xlsx = to_excel(rep, out / "changeguard_results.xlsx")
     md = out / "changeguard_report.md"
@@ -38,6 +40,13 @@ def main():
         t = by[r.test_id]
         flag = "PASS" if r.passed else "FAIL"
         print(f"  {flag} {t.id} {t.title}{'  [STALE]' if t.stale else ''}{'  -> ' + r.note if r.note else ''}")
+    if rep.mutation:
+        m = rep.mutation
+        print(f"\nMUTATION AUDIT: {m['mutants']} random defects (seed {m['seed']}, from {m['total_points']} possible)")
+        print(f"  ChangeGuard suite ({m['tests']} tests): caught {m['killed']} = {m['score']:.0%}")
+        print(f"  Typical-case suite ({m['baseline_tests']} tests): caught {m['baseline_killed']} = {m['baseline_score']:.0%}")
+        print(f"  Caught only by ChangeGuard: {len(m['only_ours'])}  |  survivors: {len(m['survivors'])}")
+    print(f"\nCRITIC: {rep.critic.get('final')}  {[a['problems'] for a in rep.critic.get('attempts', [])]}")
     print("\nAI CALLS:")
     for c in rep.llm_calls:
         print(f"  {c['step']:18} {c['backend']:28} in={c['input_tokens']} out={c['output_tokens']} {c['seconds']}s")

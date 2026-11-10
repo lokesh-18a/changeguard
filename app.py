@@ -7,7 +7,9 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from changeguard import engine
+import random
+
+from changeguard import mutation
 from changeguard.catalog import Catalog, apply_change
 from changeguard.export import to_excel
 from changeguard.impact import build_graph
@@ -32,9 +34,8 @@ with st.sidebar:
     st.caption("AI steps: Amazon Bedrock, Amazon Nova Lite. Everything else is deterministic code.")
     st.divider()
     st.subheader("System under test")
-    st.caption("The demo system has two planted bugs. Fix them to see every test pass.")
-    engine.PLANTED_BUGS["BOUNDARY"] = st.checkbox("Bug: age limit uses < instead of <=", value=True)
-    engine.PLANTED_BUGS["PRORATION"] = st.checkbox("Bug: mid-term add-on charged for the full year", value=True)
+    st.caption("The system has no planted bugs. Test strength is measured by injecting random small "
+               "defects (mutants) and counting how many the tests catch.")
     st.divider()
     st.caption("Product: fictional private car insurance, 23 rules. Numbers are illustrative.")
 
@@ -64,12 +65,15 @@ if not rep:
 failed = len(rep.results) - rep.passed
 stale = sum(t.stale for t in rep.tests)
 high = sum(c.severity == "high" for c in rep.conflicts)
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Rules affected", len(rep.impact))
 c2.metric("Conflicts", len(rep.conflicts), f"{high} high" if high else None, delta_color="inverse")
 c3.metric("Tests passed", f"{rep.passed}/{len(rep.results)}", f"{failed} failed" if failed else "all pass",
           delta_color="inverse" if failed else "normal")
 c4.metric("Stale old tests", stale)
+if rep.mutation:
+    c5.metric("Random defects caught", f"{rep.mutation['score']:.0%}",
+              f"typical suite {rep.mutation['baseline_score']:.0%}", delta_color="off")
 
 verdict_bad = failed or high
 (st.error if verdict_bad else st.success)(
@@ -79,8 +83,8 @@ verdict_bad = failed or high
 with st.expander("How the change was understood (AI step 1)"):
     st.json(rep.change.model_dump(exclude_none=True))
 
-tab_imp, tab_con, tab_test, tab_trace, tab_rep, tab_ai = st.tabs(
-    ["Impact", "Conflicts", "Tests", "Traceability", "Report", "AI usage"])
+tab_imp, tab_con, tab_test, tab_mut, tab_trace, tab_rep, tab_src, tab_ai = st.tabs(
+    ["Impact", "Conflicts", "Tests", "Test strength", "Traceability", "Report", "Real sources", "AI usage"])
 
 # ---------------- impact ----------------
 with tab_imp:
@@ -136,6 +140,33 @@ with tab_test:
                  width="stretch", hide_index=True)
     st.caption("Expected results come from the oracle (plain code that reads the rule catalog), never from the AI.")
 
+# ---------------- mutation / random defects ----------------
+with tab_mut:
+    m = rep.mutation
+    if not m:
+        st.info("Mutation audit was not run.")
+    else:
+        st.markdown(f"**{m['killed']} of {m['mutants']}** random defects caught by ChangeGuard's {m['tests']} tests "
+                    f"(**{m['score']:.0%}**), against **{m['baseline_killed']}** ({m['baseline_score']:.0%}) for a "
+                    f"typical suite of {m['baseline_tests']} tests (one ordinary example per rule, plus the existing "
+                    f"regression tests). {len(m['only_ours'])} defects were caught only by ChangeGuard.")
+        st.subheader("Try it: inject one random defect")
+        cat_now, _, _ = apply_change(Catalog.load(), rep.change)
+        if st.button("Inject a random defect and run the tests"):
+            pick = random.choice(mutation.all_mutants())
+            res = mutation.audit(cat_now, rep.tests, [pick])
+            failing = res.killers.get(pick.id, [])
+            src_line = mutation.SOURCE.splitlines()[pick.line - 1].strip()
+            st.code(f"engine.py {pick.description}\n    {src_line}", language="text")
+            (st.success if failing else st.warning)(
+                f"Caught by {len(failing)} test(s): {', '.join(failing[:10])}" if failing
+                else "Not caught. Either the tests miss it, or this defect changes nothing observable "
+                     "(an 'equivalent mutant', e.g. a default value that is never used).")
+        st.dataframe(pd.DataFrame([{"Mutant": k, "Kind": m["kinds"][k], "Defect": m["descriptions"][k],
+                                    "ChangeGuard": "caught" if k in m["killers"] else "missed",
+                                    "Typical suite": "caught" if k in m["baseline_killers"] else "missed"}
+                                   for k in sorted(m["descriptions"])]), width="stretch", hide_index=True)
+
 # ---------------- traceability ----------------
 with tab_trace:
     trows = []
@@ -147,7 +178,20 @@ with tab_trace:
 
 # ---------------- report ----------------
 with tab_rep:
+    st.caption(f"Checked by the code critic: {rep.critic.get('final', '')}. Every ID it mentions exists and every "
+               "number it states comes from the computed results.")
     st.markdown(rep.explanation)
+
+# ---------------- real sources ----------------
+with tab_src:
+    st.markdown("The catalog's numbers are checked against real insurer wordings (pipeline A).")
+    kr = Path("out/knowledge_report.json")
+    if kr.exists():
+        import json as _json
+        rows = _json.loads(kr.read_text())[0]["catalog_check"]
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+    else:
+        st.info("Run `python -m changeguard.knowledge.build` once to check the catalog against the source documents.")
 
 # ---------------- AI usage ----------------
 with tab_ai:

@@ -1,0 +1,524 @@
+{
+ "note": "Hand-labelled facts, read directly from the documents in data/sources.json. Values are recorded as the documents state them, including the Raheja QBE NCB table, whose fifth row literally says '2 consecutive years' for 50%. The NCB table in Liberty's 3-year policy is not reproduced (it refers to the tariff), so Liberty has no NCB facts.",
+ "scope": {
+  "raheja_pc": "all pages",
+  "liberty_pc3y": "all pages",
+  "usgi_pc": "all pages",
+  "iffco_nildep": "all pages",
+  "bajaj_addons": [
+   2
+  ]
+ },
+ "facts": [
+  {
+   "doc": "raheja_pc",
+   "type": "parts_depreciation",
+   "key": "rubber_nylon_plastic",
+   "value": 50
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "parts_depreciation",
+   "key": "fibreglass",
+   "value": 30
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "parts_depreciation",
+   "key": "glass",
+   "value": 0
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "parts_depreciation",
+   "key": "paint_material",
+   "value": 50
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "total_loss_threshold",
+   "key": "pct_of_idv",
+   "value": 75
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "0-0.5",
+   "value": 0
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "0.5-1",
+   "value": 5
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "1-2",
+   "value": 10
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "2-3",
+   "value": 15
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "3-4",
+   "value": 25
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "4-5",
+   "value": 35
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "5-10",
+   "value": 40
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "metal_depreciation",
+   "key": "10+",
+   "value": 50
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "0-0.5",
+   "value": 5
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "0.5-1",
+   "value": 15
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "1-2",
+   "value": 20
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "2-3",
+   "value": 30
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "3-4",
+   "value": 40
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "idv_depreciation",
+   "key": "4-5",
+   "value": 50
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "ncb",
+   "key": "1",
+   "value": 20
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "ncb",
+   "key": "2",
+   "value": 25
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "ncb",
+   "key": "3",
+   "value": 35
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "ncb",
+   "key": "4",
+   "value": 45
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "ncb",
+   "key": "2",
+   "value": 50
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": "per_schedule"
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "zero_dep_condition",
+   "key": "authorised_garage_required",
+   "value": true
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "zero_dep_condition",
+   "key": "excludes_total_loss",
+   "value": true
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "zero_dep_condition",
+   "key": "excludes_theft",
+   "value": true
+  },
+  {
+   "doc": "raheja_pc",
+   "type": "zero_dep_condition",
+   "key": "deductible_applies",
+   "value": true
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "parts_depreciation",
+   "key": "rubber_nylon_plastic",
+   "value": 50
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "parts_depreciation",
+   "key": "fibreglass",
+   "value": 30
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "parts_depreciation",
+   "key": "glass",
+   "value": 0
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "parts_depreciation",
+   "key": "paint_material",
+   "value": 50
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "total_loss_threshold",
+   "key": "pct_of_idv",
+   "value": 75
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "0-0.5",
+   "value": 0
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "0.5-1",
+   "value": 5
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "1-2",
+   "value": 10
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "2-3",
+   "value": 15
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "3-4",
+   "value": 25
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "4-5",
+   "value": 35
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "5-10",
+   "value": 40
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "metal_depreciation",
+   "key": "10+",
+   "value": 50
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "0-0.5",
+   "value": 5
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "0.5-1",
+   "value": 15
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "1-2",
+   "value": 20
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "2-3",
+   "value": 30
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "3-4",
+   "value": 40
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "idv_depreciation",
+   "key": "4-5",
+   "value": 50
+  },
+  {
+   "doc": "liberty_pc3y",
+   "type": "zero_dep_condition",
+   "key": "authorised_garage_required",
+   "value": true
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "parts_depreciation",
+   "key": "rubber_nylon_plastic",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "parts_depreciation",
+   "key": "fibreglass",
+   "value": 30
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "parts_depreciation",
+   "key": "glass",
+   "value": 0
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "parts_depreciation",
+   "key": "paint_material",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "total_loss_threshold",
+   "key": "pct_of_idv",
+   "value": 75
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "parts_depreciation",
+   "key": "airbags",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "0-0.5",
+   "value": 0
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "0.5-1",
+   "value": 5
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "1-2",
+   "value": 10
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "2-3",
+   "value": 15
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "3-4",
+   "value": 25
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "4-5",
+   "value": 35
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "5-10",
+   "value": 40
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "metal_depreciation",
+   "key": "10+",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "0-0.5",
+   "value": 5
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "0.5-1",
+   "value": 15
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "1-2",
+   "value": 20
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "2-3",
+   "value": 30
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "3-4",
+   "value": 40
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "idv_depreciation",
+   "key": "4-5",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "ncb",
+   "key": "1",
+   "value": 20
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "ncb",
+   "key": "2",
+   "value": 25
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "ncb",
+   "key": "3",
+   "value": 35
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "ncb",
+   "key": "4",
+   "value": 45
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "ncb",
+   "key": "5",
+   "value": 50
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": "unlimited"
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": 2
+  },
+  {
+   "doc": "usgi_pc",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": 1
+  },
+  {
+   "doc": "iffco_nildep",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": 1
+  },
+  {
+   "doc": "iffco_nildep",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": 2
+  },
+  {
+   "doc": "iffco_nildep",
+   "type": "zero_dep_condition",
+   "key": "deductible_applies",
+   "value": true
+  },
+  {
+   "doc": "bajaj_addons",
+   "type": "zero_dep_claim_limit",
+   "key": "max_claims",
+   "value": 2
+  },
+  {
+   "doc": "bajaj_addons",
+   "type": "zero_dep_condition",
+   "key": "authorised_garage_required",
+   "value": true
+  },
+  {
+   "doc": "bajaj_addons",
+   "type": "zero_dep_condition",
+   "key": "expires_on_transfer",
+   "value": true
+  },
+  {
+   "doc": "bajaj_addons",
+   "type": "zero_dep_condition",
+   "key": "excludes_tyres_battery",
+   "value": true
+  },
+  {
+   "doc": "bajaj_addons",
+   "type": "zero_dep_non_authorised_payout",
+   "key": "pct_of_claim",
+   "value": 90
+  }
+ ]
+}

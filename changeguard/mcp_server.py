@@ -14,7 +14,7 @@ import sys
 
 from mcp.server.mcpserver import MCPServer
 
-from . import testgen
+from . import mutation, testgen
 from .catalog import Catalog, apply_change
 from .impact import build_graph, explain_path, find_conflicts, find_impact
 from .models import ChangeRequest
@@ -34,6 +34,12 @@ def _apply(change: ChangeRequest):
     return apply_change(base, change)
 
 
+def _tests(change: ChangeRequest):
+    cat, new_ids, changed = _apply(change)
+    impact = find_impact(cat, new_ids, changed)
+    return cat, testgen.generate(cat, change, impact) + testgen.load_regression(cat)
+
+
 @server.tool(description="List the product's business rules, optionally for one area "
                          "(vehicle, rating, underwriting, billing, claims, renewal, documents).")
 def list_rules(area: str = "") -> list[dict]:
@@ -50,27 +56,36 @@ def impact_of_change(change: ChangeRequest) -> dict:
     g = build_graph(cat)
     impact = find_impact(cat, new_ids, changed)
     return {"impact": [{**i.model_dump(exclude={"path"}), "why": explain_path(g, i.path)} for i in impact],
-            "conflicts": [c.model_dump() for c in find_conflicts(cat, new_ids)]}
+            "conflicts": [c.model_dump() for c in find_conflicts(cat, new_ids, changed)]}
 
 
 @server.tool(description="Generate test cases for a structured change (boundary values, equivalence classes, "
                          "exclusions) with expected results computed by the oracle; also flags stale regression tests.")
 def generate_tests(change: ChangeRequest) -> list[dict]:
-    cat, _, _ = _apply(change)
-    tests = testgen.generate(cat, change) + testgen.load_regression(cat)
+    _, tests = _tests(change)
     return [t.model_dump() for t in tests]
 
 
 @server.tool(description="Apply a structured change, generate the tests and run them against the system. "
                          "Returns pass/fail per test.")
 def run_change(change: ChangeRequest) -> dict:
-    cat, _, _ = _apply(change)
-    tests = testgen.generate(cat, change) + testgen.load_regression(cat)
+    cat, tests = _tests(change)
     results = run_tests(cat, tests)
     by = {t.id: t for t in tests}
     return {"passed": sum(r.passed for r in results), "total": len(results),
             "failures": [{"id": r.test_id, "title": by[r.test_id].title, "note": r.note} for r in results if not r.passed],
             "stale_regression_tests": [t.id for t in tests if t.stale]}
+
+
+@server.tool(description="Measure test strength: inject random small defects (mutants) into the system under test "
+                         "and report how many the generated tests catch, against a typical-case suite.")
+def mutation_audit(change: ChangeRequest, sample: int = 0, seed: int = 7) -> dict:
+    cat, tests = _tests(change)
+    muts = mutation.sample(sample or None, seed)
+    ours = mutation.audit(cat, tests, muts)
+    base = mutation.audit(cat, mutation.baseline_suite(tests), muts)
+    return {"mutants": len(muts), "score": round(ours.score, 3), "baseline_score": round(base.score, 3),
+            "survivors": ours.survivors}
 
 
 @server.tool(description="Full pipeline from a plain-English change request (uses Amazon Bedrock to understand "

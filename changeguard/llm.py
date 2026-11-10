@@ -102,20 +102,45 @@ class LLM:
                                                                "content": [{"text": f"Invalid: {exc}. Fix and call again."}]}}]
         raise last_error
 
+    # ---------- generic structured call (used by the knowledge-build extractor) ----------
+    def call_tool(self, step: str, system: str, user_text: str, tool_name: str, schema: dict,
+                  max_tokens: int = 2000) -> dict:
+        """One Converse call that must return a tool-use record matching `schema`."""
+        if self.offline:
+            raise RuntimeError("call_tool needs Amazon Bedrock (offline mode is on)")
+        tool = {"toolSpec": {"name": tool_name, "description": f"Record the {tool_name} result.",
+                             "inputSchema": {"json": schema}}}
+        t0 = time.time()
+        resp = self._client.converse(
+            modelId=MODEL_ID, system=[{"text": system}],
+            messages=[{"role": "user", "content": [{"text": user_text}]}],
+            toolConfig={"tools": [tool], "toolChoice": {"any": {}}},
+            inferenceConfig={"maxTokens": max_tokens, "temperature": 0})
+        self._log(step, resp, t0)
+        for block in resp["output"]["message"]["content"]:
+            if "toolUse" in block:
+                return block["toolUse"]["input"]
+        raw = "".join(b.get("text", "") for b in resp["output"]["message"]["content"])
+        return json.loads(raw[raw.find("{"): raw.rfind("}") + 1])
+
     # ---------- 5. explain ----------
-    def explain(self, facts: dict) -> str:
+    def explain(self, facts: dict, feedback: str | None = None) -> str:
         if not self.offline:
             try:
-                return self._bedrock_explain(facts)
+                return self._bedrock_explain(facts, feedback)
             except Exception as exc:
                 self.calls.append(CallLog("explain", f"bedrock failed: {type(exc).__name__}", MODEL_ID))
         return _offline_explain(facts)
 
-    def _bedrock_explain(self, facts: dict) -> str:
+    def _bedrock_explain(self, facts: dict, feedback: str | None = None) -> str:
         prompt = ("Write a short impact report (under 220 words) for a delivery analyst at Flarre.AI "
                   "(spell the company exactly 'Flarre'). "
                   "Sections: Summary, Must fix before release, Test results, Recommendation. "
-                  "Use only these facts; cite rule and test IDs; do not add numbers.\n\n" + json.dumps(facts, indent=1))
+                  "Use only these facts; cite rule, test and conflict IDs exactly as written; "
+                  "do not state any number that is not in the facts; do not recommend release if any test "
+                  "failed or a high-severity conflict is open.\n\n" + json.dumps(facts, indent=1))
+        if feedback:
+            prompt += "\n\nA reviewer rejected your previous draft. " + feedback
         t0 = time.time()
         resp = self._client.converse(
             modelId=MODEL_ID, messages=[{"role": "user", "content": [{"text": prompt}]}],
@@ -202,6 +227,9 @@ def _offline_explain(f: dict) -> str:
     lines += [f"- {c['id']} ({c['severity']}): {c['message']}" for c in f["conflicts"] if c["severity"] == "high"] or ["- None."]
     lines += ["", f"**Test results.** {f['passed']} of {f['total']} tests passed."]
     lines += [f"- {x['id']}: {x['title']}. {x['note']}" for x in f["failures"]]
+    if f.get("mutation_score") is not None:
+        lines += ["", f"**Test strength.** The suite caught {f['mutation_score']:.0%} of {f['mutants']} random defects "
+                      f"(a typical-case suite caught {f['baseline_mutation_score']:.0%})."]
     if f.get("stale"):
         lines += ["", f"**Stale regression tests.** {', '.join(f['stale'])} need new expected values."]
     lines += ["", "**Recommendation.** " + ("Do not release until the failures and high conflicts are fixed."

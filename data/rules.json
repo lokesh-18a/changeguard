@@ -1,114 +1,707 @@
 {
-  "product": "Private Car Package Policy (fictional, for demonstration)",
-  "version": "1.0",
-  "note": "All rates and limits are illustrative, modelled on common Indian motor insurance practice. Not any insurer's real product.",
-  "rules": [
-    {"id": "VEH-AGE", "area": "vehicle", "name": "Vehicle age",
-     "description": "Car age in years at policy start, from the registration date.",
-     "inputs": ["registration_date", "policy_start"], "outputs": ["car_age"], "params": {}, "attributes": {}},
-
-    {"id": "VEH-CC", "area": "vehicle", "name": "Engine capacity band",
-     "description": "Places the car in an engine-size band used by third-party premium and deductible rules.",
-     "inputs": ["engine_cc"], "outputs": ["cc_band"],
-     "params": {"bands": [[1000, "upto_1000"], [1500, "1000_1500"], [99999, "above_1500"]]}, "attributes": {}},
-
-    {"id": "RAT-IDV", "area": "rating", "name": "Insured declared value (IDV)",
-     "description": "IDV = ex-showroom price reduced by an age-based percentage.",
-     "inputs": ["ex_showroom_price", "car_age"], "outputs": ["idv"],
-     "params": {"depreciation_by_age": [[0.5, 0.05], [1, 0.15], [2, 0.20], [3, 0.30], [4, 0.40], [5, 0.50], [7, 0.55], [99, 0.60]]},
-     "attributes": {}},
-
-    {"id": "RAT-OD-RATE", "area": "rating", "name": "Own-damage base rate",
-     "description": "Own-damage premium rate as a share of IDV, by car age.",
-     "inputs": ["car_age"], "outputs": ["od_rate"],
-     "params": {"rate_by_age": [[5, 0.030], [10, 0.032], [99, 0.034]]}, "attributes": {}},
-
-    {"id": "RAT-NCB", "area": "rating", "name": "No Claim Bonus",
-     "description": "Discount on own-damage premium for consecutive claim-free years.",
-     "inputs": ["claim_free_years"], "outputs": ["ncb_pct"],
-     "params": {"slab": [0.0, 0.20, 0.25, 0.35, 0.45, 0.50]}, "attributes": {}},
-
-    {"id": "RAT-OD-PREM", "area": "rating", "name": "Own-damage premium",
-     "description": "OD premium = IDV x OD rate x (1 - NCB).",
-     "inputs": ["idv", "od_rate", "ncb_pct"], "outputs": ["od_premium"], "params": {}, "attributes": {}},
-
-    {"id": "RAT-TP-PREM", "area": "rating", "name": "Third-party premium",
-     "description": "Fixed annual third-party premium by engine band.",
-     "inputs": ["cc_band"], "outputs": ["tp_premium"],
-     "params": {"premium_by_band": {"upto_1000": 2094, "1000_1500": 3416, "above_1500": 7897}}, "attributes": {}},
-
-    {"id": "RAT-ADDON-RSA", "area": "rating", "name": "Roadside assistance add-on",
-     "description": "Existing optional add-on with a flat annual price.",
-     "inputs": ["addons_requested"], "outputs": ["addon_premiums", "addon_list"],
-     "params": {"flat_premium": 199}, "attributes": {}},
-
-    {"id": "RAT-TOTAL", "area": "rating", "name": "Net premium",
-     "description": "Net premium = OD premium + TP premium + all add-on premiums.",
-     "inputs": ["od_premium", "tp_premium", "addon_premiums"], "outputs": ["net_premium"], "params": {}, "attributes": {}},
-
-    {"id": "RAT-GST", "area": "rating", "name": "GST",
-     "description": "Total premium = net premium plus 18% GST, rounded to the rupee.",
-     "inputs": ["net_premium"], "outputs": ["total_premium"], "params": {"rate": 0.18}, "attributes": {}},
-
-    {"id": "UW-MAX-AGE", "area": "underwriting", "name": "Maximum car age for comprehensive cover",
-     "description": "Comprehensive cover is not offered for cars older than 15 years.",
-     "inputs": ["car_age"], "outputs": ["eligible_comprehensive"], "params": {"max_age": 15}, "attributes": {}},
-
-    {"id": "BIL-ANNUAL", "area": "billing", "name": "Annual invoice",
-     "description": "One invoice at policy start for the total premium.",
-     "inputs": ["total_premium"], "outputs": ["invoice_amount"], "params": {},
-     "attributes": {"fixed_annual_premium": true}},
-
-    {"id": "BIL-ENDORSE", "area": "billing", "name": "Mid-term endorsement invoice",
-     "description": "Bills premium changes made during the year, pro-rata for remaining months.",
-     "inputs": ["endorsement_premium"], "outputs": ["endorsement_invoice"], "params": {},
-     "attributes": {"proration": "remaining_months", "applies_to": ["accessories"]}},
-
-    {"id": "BIL-CANCEL-REFUND", "area": "billing", "name": "Refund on cancellation",
-     "description": "Refunds unused OD and TP premium pro-rata when a policy is cancelled.",
-     "inputs": ["od_premium", "tp_premium", "months_elapsed"], "outputs": ["refund_amount"], "params": {},
-     "attributes": {"includes_addons": false}},
-
-    {"id": "CLM-DEP-PARTS", "area": "claims", "name": "Depreciation on replaced parts",
-     "description": "Deducts wear-and-tear depreciation from the cost of replaced parts.",
-     "inputs": ["car_age", "part_type", "part_cost"], "outputs": ["depreciation_amount"],
-     "params": {"fixed_by_type": {"plastic": 0.50, "rubber": 0.50, "fibreglass": 0.30, "glass": 0.0},
-                "metal_by_age": [[0.5, 0.0], [1, 0.05], [2, 0.10], [3, 0.15], [4, 0.25], [5, 0.35], [10, 0.40], [99, 0.50]]},
-     "attributes": {}},
-
-    {"id": "CLM-DEDUCT", "area": "claims", "name": "Compulsory deductible",
-     "description": "Amount the customer bears on every own-damage claim, by engine band.",
-     "inputs": ["cc_band"], "outputs": ["deductible"],
-     "params": {"by_band": {"upto_1000": 1000, "1000_1500": 1000, "above_1500": 2000}}, "attributes": {}},
-
-    {"id": "CLM-TOTAL-LOSS", "area": "claims", "name": "Total loss test",
-     "description": "A claim is a total loss when repair cost exceeds 75% of IDV.",
-     "inputs": ["repair_cost", "idv"], "outputs": ["is_total_loss"], "params": {"threshold": 0.75}, "attributes": {}},
-
-    {"id": "CLM-PAYOUT", "area": "claims", "name": "Claim payout",
-     "description": "Payout = parts cost - depreciation - deductible; total loss pays IDV - deductible.",
-     "inputs": ["part_cost", "depreciation_amount", "deductible", "is_total_loss", "idv"], "outputs": ["claim_payout"],
-     "params": {}, "attributes": {}},
-
-    {"id": "CLM-NCB-RESET", "area": "claims", "name": "NCB reset after claim",
-     "description": "Any paid own-damage claim resets claim-free years to zero.",
-     "inputs": ["claim_payout"], "outputs": ["claim_free_years"], "params": {}, "attributes": {}},
-
-    {"id": "REN-AGE", "area": "renewal", "name": "Renewal re-rating",
-     "description": "At renewal the car is a year older; IDV and rates are recomputed.",
-     "inputs": ["car_age"], "outputs": ["renewal_car_age"], "params": {},
-     "attributes": {"rechecks_addon_eligibility": false}},
-
-    {"id": "DOC-SCHEDULE", "area": "documents", "name": "Policy schedule",
-     "description": "The schedule printed for the customer: IDV, covers, add-ons and premium breakdown.",
-     "inputs": ["total_premium", "addon_premiums", "idv"], "outputs": ["policy_schedule"], "params": {}, "attributes": {}},
-
-    {"id": "DOC-WORDING", "area": "documents", "name": "Policy wording",
-     "description": "Legal wording; every add-on needs its own clause.",
-     "inputs": ["addon_list"], "outputs": ["policy_wording"], "params": {}, "attributes": {}},
-
-    {"id": "DOC-SETTLEMENT", "area": "documents", "name": "Claim settlement letter",
-     "description": "Explains to the customer what was paid and what was deducted.",
-     "inputs": ["claim_payout", "depreciation_amount"], "outputs": ["settlement_letter"], "params": {}, "attributes": {}}
-  ]
+ "product": "Private Car Package Policy (fictional, for demonstration)",
+ "version": "1.0",
+ "note": "All rates and limits are illustrative, modelled on common Indian motor insurance practice. Not any insurer's real product.",
+ "rules": [
+  {
+   "id": "VEH-AGE",
+   "area": "vehicle",
+   "name": "Vehicle age",
+   "description": "Car age in years at policy start, from the registration date.",
+   "inputs": [
+    "registration_date",
+    "policy_start"
+   ],
+   "outputs": [
+    "car_age"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "VEH-CC",
+   "area": "vehicle",
+   "name": "Engine capacity band",
+   "description": "Places the car in an engine-size band used by third-party premium and deductible rules.",
+   "inputs": [
+    "engine_cc"
+   ],
+   "outputs": [
+    "cc_band"
+   ],
+   "params": {
+    "bands": [
+     [
+      1000,
+      "upto_1000"
+     ],
+     [
+      1500,
+      "1000_1500"
+     ],
+     [
+      99999,
+      "above_1500"
+     ]
+    ]
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "bands",
+     "input": "engine_cc",
+     "ops": [
+      "quote",
+      "claim"
+     ],
+     "step": 1
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-IDV",
+   "area": "rating",
+   "name": "Insured declared value (IDV)",
+   "description": "IDV = ex-showroom price reduced by an age-based percentage.",
+   "inputs": [
+    "ex_showroom_price",
+    "car_age"
+   ],
+   "outputs": [
+    "idv"
+   ],
+   "params": {
+    "depreciation_by_age": [
+     [
+      0.5,
+      0.05
+     ],
+     [
+      1,
+      0.15
+     ],
+     [
+      2,
+      0.2
+     ],
+     [
+      3,
+      0.3
+     ],
+     [
+      4,
+      0.4
+     ],
+     [
+      5,
+      0.5
+     ],
+     [
+      7,
+      0.55
+     ],
+     [
+      99,
+      0.6
+     ]
+    ]
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "depreciation_by_age",
+     "input": "car_age",
+     "ops": [
+      "quote"
+     ],
+     "step": 0.1
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-OD-RATE",
+   "area": "rating",
+   "name": "Own-damage base rate",
+   "description": "Own-damage premium rate as a share of IDV, by car age.",
+   "inputs": [
+    "car_age"
+   ],
+   "outputs": [
+    "od_rate"
+   ],
+   "params": {
+    "rate_by_age": [
+     [
+      5,
+      0.03
+     ],
+     [
+      10,
+      0.032
+     ],
+     [
+      99,
+      0.034
+     ]
+    ]
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "rate_by_age",
+     "input": "car_age",
+     "ops": [
+      "quote"
+     ],
+     "step": 0.1
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-NCB",
+   "area": "rating",
+   "name": "No Claim Bonus",
+   "description": "Discount on own-damage premium for consecutive claim-free years.",
+   "inputs": [
+    "claim_free_years"
+   ],
+   "outputs": [
+    "ncb_pct"
+   ],
+   "params": {
+    "slab": [
+     0.0,
+     0.2,
+     0.25,
+     0.35,
+     0.45,
+     0.5
+    ]
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "slab",
+     "input": "claim_free_years",
+     "ops": [
+      "quote",
+      "renewal"
+     ],
+     "step": 1
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-OD-PREM",
+   "area": "rating",
+   "name": "Own-damage premium",
+   "description": "OD premium = IDV x OD rate x (1 - NCB).",
+   "inputs": [
+    "idv",
+    "od_rate",
+    "ncb_pct"
+   ],
+   "outputs": [
+    "od_premium"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-TP-PREM",
+   "area": "rating",
+   "name": "Third-party premium",
+   "description": "Fixed annual third-party premium by engine band.",
+   "inputs": [
+    "cc_band"
+   ],
+   "outputs": [
+    "tp_premium"
+   ],
+   "params": {
+    "premium_by_band": {
+     "upto_1000": 2094,
+     "1000_1500": 3416,
+     "above_1500": 7897
+    }
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "premium_by_band",
+     "input": "engine_cc",
+     "ops": [
+      "quote"
+     ],
+     "step": 1,
+     "via": "VEH-CC.bands"
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-ADDON-RSA",
+   "area": "rating",
+   "name": "Roadside assistance add-on",
+   "description": "Existing optional add-on with a flat annual price.",
+   "inputs": [
+    "addons_requested"
+   ],
+   "outputs": [
+    "addon_premiums",
+    "addon_list"
+   ],
+   "params": {
+    "flat_premium": 199
+   },
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-TOTAL",
+   "area": "rating",
+   "name": "Net premium",
+   "description": "Net premium = OD premium + TP premium + all add-on premiums.",
+   "inputs": [
+    "od_premium",
+    "tp_premium",
+    "addon_premiums"
+   ],
+   "outputs": [
+    "net_premium"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [
+    {
+     "param": null,
+     "input": null,
+     "ops": [
+      "quote"
+     ],
+     "typical": true
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "RAT-GST",
+   "area": "rating",
+   "name": "GST",
+   "description": "Total premium = net premium plus 18% GST, rounded to the rupee.",
+   "inputs": [
+    "net_premium"
+   ],
+   "outputs": [
+    "total_premium"
+   ],
+   "params": {
+    "rate": 0.18
+   },
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "UW-MAX-AGE",
+   "area": "underwriting",
+   "name": "Maximum car age for comprehensive cover",
+   "description": "Comprehensive cover is not offered for cars older than 15 years.",
+   "inputs": [
+    "car_age"
+   ],
+   "outputs": [
+    "eligible_comprehensive"
+   ],
+   "params": {
+    "max_age": 15
+   },
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "BIL-ANNUAL",
+   "area": "billing",
+   "name": "Annual invoice",
+   "description": "One invoice at policy start for the total premium.",
+   "inputs": [
+    "total_premium"
+   ],
+   "outputs": [
+    "invoice_amount"
+   ],
+   "params": {},
+   "attributes": {
+    "fixed_annual_premium": true
+   },
+   "exercise": [],
+   "assumptions": [
+    {
+     "id": "premium_fixed_for_term",
+     "broken_by": "midterm_premium_change",
+     "text": "The annual invoice assumes the premium is fixed for the whole policy term.",
+     "fix": "Show mid-term endorsement invoices alongside the annual invoice and in the payment schedule."
+    }
+   ],
+   "tags": []
+  },
+  {
+   "id": "BIL-ENDORSE",
+   "area": "billing",
+   "name": "Mid-term endorsement invoice",
+   "description": "Bills premium changes made during the year, pro-rata for remaining months.",
+   "inputs": [
+    "endorsement_premium"
+   ],
+   "outputs": [
+    "endorsement_invoice"
+   ],
+   "params": {},
+   "attributes": {
+    "proration": "remaining_months",
+    "applies_to": [
+     "accessories"
+    ]
+   },
+   "exercise": [],
+   "assumptions": [
+    {
+     "id": "endorsements_for_accessories_only",
+     "broken_by": "addon_midterm",
+     "text": "Endorsement billing is configured only for accessory changes.",
+     "fix": "Allow add-on endorsements, charged pro-rata for the remaining months."
+    }
+   ],
+   "tags": []
+  },
+  {
+   "id": "BIL-CANCEL-REFUND",
+   "area": "billing",
+   "name": "Refund on cancellation",
+   "description": "Refunds unused OD and TP premium pro-rata when a policy is cancelled.",
+   "inputs": [
+    "od_premium",
+    "tp_premium",
+    "months_elapsed"
+   ],
+   "outputs": [
+    "refund_amount"
+   ],
+   "params": {},
+   "attributes": {
+    "includes_addons": false
+   },
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "CLM-DEP-PARTS",
+   "area": "claims",
+   "name": "Depreciation on replaced parts",
+   "description": "Deducts wear-and-tear depreciation from the cost of replaced parts.",
+   "inputs": [
+    "car_age",
+    "part_type",
+    "part_cost"
+   ],
+   "outputs": [
+    "depreciation_amount"
+   ],
+   "params": {
+    "fixed_by_type": {
+     "plastic": 0.5,
+     "rubber": 0.5,
+     "fibreglass": 0.3,
+     "glass": 0.0
+    },
+    "metal_by_age": [
+     [
+      0.5,
+      0.0
+     ],
+     [
+      1,
+      0.05
+     ],
+     [
+      2,
+      0.1
+     ],
+     [
+      3,
+      0.15
+     ],
+     [
+      4,
+      0.25
+     ],
+     [
+      5,
+      0.35
+     ],
+     [
+      10,
+      0.4
+     ],
+     [
+      99,
+      0.5
+     ]
+    ]
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "metal_by_age",
+     "input": "car_age",
+     "ops": [
+      "claim"
+     ],
+     "step": 0.1
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "CLM-DEDUCT",
+   "area": "claims",
+   "name": "Compulsory deductible",
+   "description": "Amount the customer bears on every own-damage claim, by engine band.",
+   "inputs": [
+    "cc_band"
+   ],
+   "outputs": [
+    "deductible"
+   ],
+   "params": {
+    "by_band": {
+     "upto_1000": 1000,
+     "1000_1500": 1000,
+     "above_1500": 2000
+    }
+   },
+   "attributes": {},
+   "exercise": [
+    {
+     "param": "by_band",
+     "input": "engine_cc",
+     "ops": [
+      "claim"
+     ],
+     "step": 1,
+     "via": "VEH-CC.bands"
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "CLM-TOTAL-LOSS",
+   "area": "claims",
+   "name": "Total loss test",
+   "description": "A claim is a total loss when repair cost exceeds 75% of IDV.",
+   "inputs": [
+    "repair_cost",
+    "idv"
+   ],
+   "outputs": [
+    "is_total_loss"
+   ],
+   "params": {
+    "threshold": 0.75
+   },
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "CLM-PAYOUT",
+   "area": "claims",
+   "name": "Claim payout",
+   "description": "Payout = parts cost - depreciation - deductible; total loss pays IDV - deductible.",
+   "inputs": [
+    "part_cost",
+    "depreciation_amount",
+    "deductible",
+    "is_total_loss",
+    "idv"
+   ],
+   "outputs": [
+    "claim_payout"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [
+    {
+     "param": null,
+     "input": null,
+     "ops": [
+      "claim"
+     ],
+     "typical": true
+    }
+   ],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "CLM-NCB-RESET",
+   "area": "claims",
+   "name": "NCB reset after claim",
+   "description": "Any paid own-damage claim resets claim-free years to zero.",
+   "inputs": [
+    "claim_payout"
+   ],
+   "outputs": [
+    "claim_free_years"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "REN-AGE",
+   "area": "renewal",
+   "name": "Renewal re-rating",
+   "description": "At renewal the car is a year older; IDV and rates are recomputed.",
+   "inputs": [
+    "car_age"
+   ],
+   "outputs": [
+    "renewal_car_age"
+   ],
+   "params": {},
+   "attributes": {
+    "rechecks_addon_eligibility": false
+   },
+   "exercise": [
+    {
+     "param": null,
+     "input": "car_age",
+     "ops": [
+      "renewal"
+     ],
+     "typical": true
+    }
+   ],
+   "assumptions": [
+    {
+     "id": "addon_eligibility_not_rechecked",
+     "broken_by": "age_limited_cover",
+     "text": "Renewal re-rating does not re-check add-on eligibility rules.",
+     "fix": "Call each add-on's eligibility rule during renewal re-rating."
+    }
+   ],
+   "tags": []
+  },
+  {
+   "id": "DOC-SCHEDULE",
+   "area": "documents",
+   "name": "Policy schedule",
+   "description": "The schedule printed for the customer: IDV, covers, add-ons and premium breakdown.",
+   "inputs": [
+    "total_premium",
+    "addon_premiums",
+    "idv"
+   ],
+   "outputs": [
+    "policy_schedule"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  },
+  {
+   "id": "DOC-WORDING",
+   "area": "documents",
+   "name": "Policy wording",
+   "description": "Legal wording; every add-on needs its own clause.",
+   "inputs": [
+    "addon_list"
+   ],
+   "outputs": [
+    "policy_wording"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [
+    {
+     "id": "clauses_for_existing_covers_only",
+     "broken_by": "new_cover",
+     "text": "The policy wording has clauses only for existing covers.",
+     "fix": "Draft and file the new cover's clause; add it to the wording template."
+    }
+   ],
+   "tags": []
+  },
+  {
+   "id": "DOC-SETTLEMENT",
+   "area": "documents",
+   "name": "Claim settlement letter",
+   "description": "Explains to the customer what was paid and what was deducted.",
+   "inputs": [
+    "claim_payout",
+    "depreciation_amount"
+   ],
+   "outputs": [
+    "settlement_letter"
+   ],
+   "params": {},
+   "attributes": {},
+   "exercise": [],
+   "assumptions": [],
+   "tags": []
+  }
+ ],
+ "field_families": {
+  "premium_components": {
+   "fields": [
+    "od_premium",
+    "tp_premium",
+    "addon_premiums"
+   ],
+   "meaning": "parts that make up what the customer pays"
+  },
+  "claim_deductions": {
+   "fields": [
+    "depreciation_amount",
+    "deductible"
+   ],
+   "meaning": "amounts taken off a claim"
+  }
+ },
+ "varies_at_renewal": [
+  "car_age",
+  "claim_free_years",
+  "renewal_car_age"
+ ]
 }

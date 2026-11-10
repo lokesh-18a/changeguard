@@ -20,5 +20,4 @@ def test_tools_listed():
 def test_run_change_via_mcp():
     out = _call("run_change", {"change": ZD})
     data = json.loads(out.content[0].text)
-    assert (data["passed"], data["total"]) == (22, 26)
-    assert {f["id"] for f in data["failures"]} == {"GT-02", "GT-08", "GT-09", "GT-13"}
+    assert data["passed"] == data["total"] and data["total"] > 30

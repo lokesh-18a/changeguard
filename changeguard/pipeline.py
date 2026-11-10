@@ -1,7 +1,10 @@
-"""Orchestrates the five agents: Understand -> Impact -> Design tests -> Run -> Explain.
+"""Orchestrates the change pipeline (pipeline B):
 
-Each agent has one job and passes a typed result to the next. Only Understand
-and Explain call the language model; the rest is deterministic code.
+  Planner (LLM) -> Impact analyst -> Conflict checker -> Test designer -> Oracle + runner
+  -> Mutation auditor -> Writer (LLM) -> Critic (code)
+
+Each agent has one job and passes a typed record to the next. Only the Planner and the
+Writer call the language model; everything that decides pass or fail is plain code.
 """
 from __future__ import annotations
 
@@ -9,7 +12,7 @@ import json
 import time
 from dataclasses import dataclass, field
 
-from . import testgen
+from . import mutation, testgen
 from .catalog import Catalog, apply_change
 from .impact import build_graph, explain_path, find_conflicts, find_impact
 from .llm import LLM
@@ -28,6 +31,8 @@ class RunReport:
     tests: list[TestCase]
     results: list[TestResult]
     explanation: str
+    mutation: dict = field(default_factory=dict)
+    critic: dict = field(default_factory=dict)
     trace: list[dict] = field(default_factory=list)
     llm_calls: list = field(default_factory=list)
     backend: str = ""
@@ -41,7 +46,8 @@ def catalog_summary(cat: Catalog) -> str:
     return "\n".join(f"{r.id} [{r.area}] {r.name}: params={json.dumps(r.params)}" for r in cat.rules.values())
 
 
-def run(request_text: str, offline: bool = False, base: Catalog | None = None) -> RunReport:
+def run(request_text: str, offline: bool = False, base: Catalog | None = None,
+        mutants: int | None = None, seed: int = 7) -> RunReport:
     base = base or Catalog.load()
     llm = LLM(offline=offline)
     trace = []
@@ -52,27 +58,48 @@ def run(request_text: str, offline: bool = False, base: Catalog | None = None) -
         trace.append({"agent": name, "seconds": round(time.time() - t0, 3)})
         return out
 
-    change = step("1 Understand (LLM)", lambda: llm.parse_change(request_text, catalog_summary(base), validate=lambda c: apply_change(base, c)))
+    change = step("Planner (LLM)", lambda: llm.parse_change(
+        request_text, catalog_summary(base), validate=lambda c: apply_change(base, c)))
     cat, new_ids, changed_ids = apply_change(base, change)
     graph = build_graph(cat)
-    impact = step("2 Find impact (code)", lambda: find_impact(cat, new_ids, changed_ids))
-    conflicts = step("2b Check conflicts (code)", lambda: find_conflicts(cat, new_ids))
-    tests = step("3 Design tests (code)", lambda: testgen.generate(cat, change) + testgen.load_regression(cat))
-    impacted = {i.rule_id for i in impact}
-    results = step("4 Run tests (code)", lambda: run_tests(cat, tests))
+    impact = step("Impact analyst", lambda: find_impact(cat, new_ids, changed_ids))
+    conflicts = step("Conflict checker", lambda: find_conflicts(cat, new_ids, changed_ids))
+    tests = step("Test designer", lambda: testgen.generate(cat, change, impact) + testgen.load_regression(cat))
+    results = step("Oracle + runner", lambda: run_tests(cat, tests))
 
+    mut = {}
+    if mutants != 0:   # None = every possible mutant; N = a random sample of N
+        def _audit():
+            sample = mutation.sample(mutants, seed)
+            full = mutation.audit(cat, tests, sample, "ChangeGuard suite")
+            base_suite = mutation.baseline_suite(tests)
+            basic = mutation.audit(cat, base_suite, sample, "typical-case suite")
+            return {"mutants": len(sample), "seed": seed, "total_points": len(mutation.all_mutants()),
+                    "score": round(full.score, 3), "killed": full.killed, "tests": len(tests),
+                    "baseline_score": round(basic.score, 3), "baseline_killed": basic.killed,
+                    "baseline_tests": len(base_suite), "survivors": full.survivors,
+                    "only_ours": sorted(set(full.killers) - set(basic.killers)),
+                    "descriptions": {m.id: m.description for m in sample},
+                    "kinds": {m.id: m.kind for m in sample},
+                    "killers": full.killers, "baseline_killers": basic.killers}
+        mut = step("Mutation auditor", _audit)
+
+    impacted = {i.rule_id for i in impact}
     by_id = {t.id: t for t in tests}
     facts = {
         "change": change.summary,
         "impacted_rules": len(impact),
+        "rule_ids": sorted(impacted),
         "areas": sorted({i.area for i in impact}),
         "conflicts": [c.model_dump() for c in conflicts],
         "passed": sum(r.passed for r in results), "total": len(results),
         "failures": [{"id": r.test_id, "title": by_id[r.test_id].title, "note": r.note} for r in results if not r.passed],
         "stale": [t.id for t in tests if t.stale],
-        "regression_tests_touching_impacted_rules": [t.id for t in tests if t.origin == "regression" and impacted & set(t.rules)],
+        "mutation_score": mut.get("score"), "baseline_mutation_score": mut.get("baseline_score"),
+        "mutants": mut.get("mutants"),
     }
-    explanation = step("5 Explain (LLM)", lambda: llm.explain(facts))
-    return RunReport(request_text, change, testgen.requirements_for(change), impact,
+    from .critic import review  # local import keeps the module graph simple
+    explanation, critic = step("Writer (LLM) + Critic", lambda: review(llm, facts, tests, cat))
+    return RunReport(request_text, change, testgen.requirements_for(cat, new_ids, changed_ids), impact,
                      {i.rule_id: explain_path(graph, i.path) for i in impact}, conflicts, tests, results,
-                     explanation, trace, [c.__dict__ for c in llm.calls], llm.backend)
+                     explanation, mut, critic, trace, [c.__dict__ for c in llm.calls], llm.backend)

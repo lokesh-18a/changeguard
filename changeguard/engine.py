@@ -1,22 +1,14 @@
-"""The 'system under test': a stand-in for an insurer's policy, billing and claims system.
+"""The 'system under test': a stand-in for a carrier's configured policy, billing and claims system.
 
-It plays the role of a Guidewire / Duck Creek configuration that developers have
-just changed. It is written separately from the oracle, and it contains two
-PLANTED BUGS of the kind that reach production when edge cases go untested:
-
-  BOUNDARY  - add-on eligibility uses "<" instead of "<=", so a car aged exactly
-              at the limit is wrongly refused.
-  PRORATION - a mid-term add-on is charged for the full year instead of the
-              remaining months.
-
-Switch them off with PLANTED_BUGS to see every generated test pass.
+It is written separately from the oracle (oracle.py), the way a carrier's Guidewire or
+Duck Creek configuration is separate from the product specification. It contains no
+deliberate bugs. To measure how good the tests are, mutation.py injects RANDOM small
+defects into this file (for example `<=` becomes `<`, `+` becomes `-`) and checks how
+many of them the generated tests catch.
 """
 from __future__ import annotations
 
-
 from .catalog import Catalog
-
-PLANTED_BUGS = {"BOUNDARY": True, "PRORATION": True}
 
 
 def _lookup(table, value):
@@ -31,10 +23,11 @@ def _band(cat, cc):
 
 
 def _addon_ok(cat: Catalog, code: str, age: float) -> bool:
-    limit = cat.param(f"{code}-ELIG", "max_age")
-    if PLANTED_BUGS["BOUNDARY"]:
-        return age < limit          # BUG: should be <=
-    return age <= limit
+    return age <= cat.param(f"{code}-ELIG", "max_age")
+
+
+def _gst(cat: Catalog, amount: float) -> int:
+    return round(amount * (1 + cat.param("RAT-GST", "rate")))
 
 
 def quote(cat: Catalog, req: dict) -> dict:
@@ -55,8 +48,7 @@ def quote(cat: Catalog, req: dict) -> dict:
                 rejected.append(code)
     net = od + tp + sum(addons.values())
     return {"idv": idv, "od_premium": od, "tp_premium": tp, "addon_premiums": addons,
-            "rejected_addons": rejected, "net_premium": net,
-            "total_premium": round(net * (1 + cat.param("RAT-GST", "rate")))}
+            "rejected_addons": rejected, "net_premium": net, "total_premium": _gst(cat, net)}
 
 
 def midterm(cat: Catalog, req: dict) -> dict:
@@ -64,8 +56,8 @@ def midterm(cat: Catalog, req: dict) -> dict:
     if not _addon_ok(cat, code, req["car_age"]):
         return {"accepted": False, "charge": 0}
     annual = quote(cat, {**req, "addons": [code]})["addon_premiums"][code]
-    months = 12 if PLANTED_BUGS["PRORATION"] else 13 - req["month_added"]   # BUG: ignores month_added
-    return {"accepted": True, "charge": round(annual * months / 12 * (1 + cat.param("RAT-GST", "rate")))}
+    remaining_months = 13 - req["month_added"]
+    return {"accepted": True, "charge": _gst(cat, annual * remaining_months / 12)}
 
 
 def claim(cat: Catalog, req: dict) -> dict:
@@ -102,5 +94,5 @@ def renewal(cat: Catalog, req: dict) -> dict:
 OPERATIONS = {"quote": quote, "midterm": midterm, "claim": claim, "renewal": renewal}
 
 
-def run(cat: Catalog, kind: str, inputs: dict) -> dict:
-    return OPERATIONS[kind](cat, inputs)
+def run(cat: Catalog, kind: str, inputs: dict, ops: dict | None = None) -> dict:
+    return (ops or OPERATIONS)[kind](cat, inputs)
