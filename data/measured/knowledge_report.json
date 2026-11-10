@@ -1,0 +1,846 @@
+[
+ {
+  "extractor": "baseline",
+  "documents": [
+   "raheja_pc",
+   "liberty_pc3y",
+   "usgi_pc",
+   "iffco_nildep",
+   "bajaj_addons"
+  ],
+  "candidates": 65,
+  "accepted": 65,
+  "rejected_by_verifier": 0,
+  "rejection_reasons": [],
+  "score_vs_gold": {
+   "overall": {
+    "precision": 1.0,
+    "recall": 0.765,
+    "f1": 0.867,
+    "true_pos": 65,
+    "predicted": 65,
+    "gold": 85
+   },
+   "tables": {
+    "precision": 1.0,
+    "recall": 0.956,
+    "f1": 0.977,
+    "true_pos": 65,
+    "predicted": 65,
+    "gold": 68
+   },
+   "clauses": {
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "true_pos": 0,
+    "predicted": 0,
+    "gold": 17
+   },
+   "missed": [
+    "('bajaj_addons', 'zero_dep_claim_limit', 'max_claims', 2.0)",
+    "('bajaj_addons', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('bajaj_addons', 'zero_dep_condition', 'excludes_tyres_battery', True)",
+    "('bajaj_addons', 'zero_dep_condition', 'expires_on_transfer', True)",
+    "('bajaj_addons', 'zero_dep_non_authorised_payout', 'pct_of_claim', 90.0)",
+    "('iffco_nildep', 'zero_dep_claim_limit', 'max_claims', 1.0)",
+    "('iffco_nildep', 'zero_dep_claim_limit', 'max_claims', 2.0)",
+    "('iffco_nildep', 'zero_dep_condition', 'deductible_applies', True)",
+    "('liberty_pc3y', 'parts_depreciation', 'paint_material', 50.0)",
+    "('liberty_pc3y', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('raheja_pc', 'parts_depreciation', 'paint_material', 50.0)",
+    "('raheja_pc', 'zero_dep_claim_limit', 'max_claims', 'per_schedule')",
+    "('raheja_pc', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('raheja_pc', 'zero_dep_condition', 'deductible_applies', True)",
+    "('raheja_pc', 'zero_dep_condition', 'excludes_theft', True)",
+    "('raheja_pc', 'zero_dep_condition', 'excludes_total_loss', True)",
+    "('usgi_pc', 'parts_depreciation', 'paint_material', 50.0)",
+    "('usgi_pc', 'zero_dep_claim_limit', 'max_claims', 'unlimited')",
+    "('usgi_pc', 'zero_dep_claim_limit', 'max_claims', 1.0)",
+    "('usgi_pc', 'zero_dep_claim_limit', 'max_claims', 2.0)"
+   ],
+   "extra": []
+  },
+  "contradictions": [
+   {
+    "doc": "raheja_pc",
+    "type": "ncb",
+    "key": "2",
+    "values": [
+     "25.0",
+     "50.0"
+    ],
+    "quotes": [
+     "No Claim made or pending during the preceding 2 consecutive years of insurance 25%",
+     "No Claim made or pending during the preceding 2 consecutive years of insurance 50%"
+    ]
+   }
+  ],
+  "variations_between_insurers": [
+   {
+    "type": "ncb",
+    "key": "2",
+    "values": {
+     "25.0": [
+      "raheja_pc",
+      "usgi_pc"
+     ],
+     "50.0": [
+      "raheja_pc"
+     ]
+    }
+   }
+  ],
+  "catalog_check": [
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 0-0.5",
+    "catalog": 0.0,
+    "documents": 0.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 0-0.5",
+    "catalog": 5.0,
+    "documents": 5.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 0.5-1",
+    "catalog": 5.0,
+    "documents": 5.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 0.5-1",
+    "catalog": 15.0,
+    "documents": 15.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 1-2",
+    "catalog": 10.0,
+    "documents": 10.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 1-2",
+    "catalog": 20.0,
+    "documents": 20.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 2-3",
+    "catalog": 15.0,
+    "documents": 15.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 2-3",
+    "catalog": 30.0,
+    "documents": 30.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 3-4",
+    "catalog": 25.0,
+    "documents": 25.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 3-4",
+    "catalog": 40.0,
+    "documents": 40.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 4-5",
+    "catalog": 35.0,
+    "documents": 35.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 4-5",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 5-10",
+    "catalog": 40.0,
+    "documents": 40.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 10+",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type plastic",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type fibreglass",
+    "catalog": 30.0,
+    "documents": 30.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type glass",
+    "catalog": 0.0,
+    "documents": 0.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 1 yr",
+    "catalog": 20.0,
+    "documents": 20.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 2 yr",
+    "catalog": 25.0,
+    "documents": 25.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 3 yr",
+    "catalog": 35.0,
+    "documents": 35.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 4 yr",
+    "catalog": 45.0,
+    "documents": 45.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 5 yr",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-TOTAL-LOSS",
+    "parameter": "threshold ",
+    "catalog": 75.0,
+    "documents": 75.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   }
+  ],
+  "model_calls": 0,
+  "tokens": {
+   "input": 0,
+   "output": 0
+  }
+ },
+ {
+  "extractor": "nova",
+  "documents": [
+   "raheja_pc",
+   "liberty_pc3y",
+   "usgi_pc",
+   "iffco_nildep",
+   "bajaj_addons"
+  ],
+  "candidates": 392,
+  "accepted": 74,
+  "rejected_by_verifier": 159,
+  "rejection_reasons": [
+   [
+    "quote is missing or too short",
+    44
+   ],
+   [
+    "passage is not about the zero-depreciation cover",
+    23
+   ],
+   [
+    "value 0 is not written in the quote",
+    20
+   ],
+   [
+    "quote does not mention what excludes_total_loss is about",
+    12
+   ],
+   [
+    "a condition fact must be true (record only conditions the text states)",
+    8
+   ],
+   [
+    "quote does not mention what excludes_tyres_battery is about",
+    7
+   ],
+   [
+    "quote does not mention what authorised_garage_required is about",
+    7
+   ],
+   [
+    "quote does not mention what excludes_theft is about",
+    4
+   ]
+  ],
+  "score_vs_gold": {
+   "overall": {
+    "precision": 0.946,
+    "recall": 0.824,
+    "f1": 0.881,
+    "true_pos": 70,
+    "predicted": 74,
+    "gold": 85
+   },
+   "tables": {
+    "precision": 0.967,
+    "recall": 0.853,
+    "f1": 0.906,
+    "true_pos": 58,
+    "predicted": 60,
+    "gold": 68
+   },
+   "clauses": {
+    "precision": 0.857,
+    "recall": 0.706,
+    "f1": 0.774,
+    "true_pos": 12,
+    "predicted": 14,
+    "gold": 17
+   },
+   "missed": [
+    "('bajaj_addons', 'zero_dep_claim_limit', 'max_claims', 2.0)",
+    "('bajaj_addons', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('iffco_nildep', 'zero_dep_claim_limit', 'max_claims', 1.0)",
+    "('iffco_nildep', 'zero_dep_condition', 'deductible_applies', True)",
+    "('liberty_pc3y', 'parts_depreciation', 'paint_material', 50.0)",
+    "('liberty_pc3y', 'total_loss_threshold', 'pct_of_idv', 75.0)",
+    "('raheja_pc', 'metal_depreciation', '10+', 50.0)",
+    "('raheja_pc', 'metal_depreciation', '2-3', 15.0)",
+    "('raheja_pc', 'metal_depreciation', '3-4', 25.0)",
+    "('raheja_pc', 'metal_depreciation', '4-5', 35.0)",
+    "('raheja_pc', 'metal_depreciation', '5-10', 40.0)",
+    "('raheja_pc', 'ncb', '2', 50.0)",
+    "('raheja_pc', 'parts_depreciation', 'paint_material', 50.0)",
+    "('raheja_pc', 'zero_dep_condition', 'deductible_applies', True)",
+    "('usgi_pc', 'parts_depreciation', 'airbags', 50.0)"
+   ],
+   "extra": [
+    "('bajaj_addons', 'total_loss_threshold', 'pct_of_idv', 75.0)",
+    "('iffco_nildep', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('usgi_pc', 'parts_depreciation', 'paint_material', 25.0)",
+    "('usgi_pc', 'zero_dep_condition', 'excludes_total_loss', True)"
+   ]
+  },
+  "contradictions": [
+   {
+    "doc": "usgi_pc",
+    "type": "parts_depreciation",
+    "key": "paint_material",
+    "values": [
+     "25.0",
+     "50.0"
+    ],
+    "quotes": [
+     "In the case of painting, the depreciation rate of 50% shall be applied only on the material cost of total painting charges.",
+     "the material component shall be considered as 25% of total painting charges for the purpose of applying the depreciation"
+    ]
+   },
+   {
+    "doc": "usgi_pc",
+    "type": "zero_dep_claim_limit",
+    "key": "max_claims",
+    "values": [
+     "1.0",
+     "2.0",
+     "unlimited"
+    ],
+    "quotes": [
+     "Plan A: The cover is applicable for every partial loss claim during the policy period.",
+     "Plan B: The cover is applicable for maximum 2 (two) partial loss claims during the policy period.",
+     "Plan C: The cover is applicable for maximum 1 (one) partial loss claim during the policy period."
+    ]
+   }
+  ],
+  "variations_between_insurers": [
+   {
+    "type": "parts_depreciation",
+    "key": "paint_material",
+    "values": {
+     "50.0": [
+      "usgi_pc"
+     ],
+     "25.0": [
+      "usgi_pc"
+     ]
+    }
+   },
+   {
+    "type": "zero_dep_claim_limit",
+    "key": "max_claims",
+    "values": {
+     "per_schedule": [
+      "raheja_pc"
+     ],
+     "unlimited": [
+      "usgi_pc"
+     ],
+     "2.0": [
+      "iffco_nildep",
+      "usgi_pc"
+     ],
+     "1.0": [
+      "usgi_pc"
+     ]
+    }
+   }
+  ],
+  "catalog_check": [
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 0-0.5",
+    "catalog": 0.0,
+    "documents": 0.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 0-0.5",
+    "catalog": 5.0,
+    "documents": 5.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 0.5-1",
+    "catalog": 5.0,
+    "documents": 5.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 0.5-1",
+    "catalog": 15.0,
+    "documents": 15.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 1-2",
+    "catalog": 10.0,
+    "documents": 10.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 1-2",
+    "catalog": 20.0,
+    "documents": 20.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 2-3",
+    "catalog": 15.0,
+    "documents": 15.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 2-3",
+    "catalog": 30.0,
+    "documents": 30.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 3-4",
+    "catalog": 25.0,
+    "documents": 25.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 3-4",
+    "catalog": 40.0,
+    "documents": 40.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 4-5",
+    "catalog": 35.0,
+    "documents": 35.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-IDV",
+    "parameter": "depreciation_by_age 4-5",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 5-10",
+    "catalog": 40.0,
+    "documents": 40.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "metal_by_age 10+",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type plastic",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type fibreglass",
+    "catalog": 30.0,
+    "documents": 30.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-DEP-PARTS",
+    "parameter": "fixed_by_type glass",
+    "catalog": 0.0,
+    "documents": 0.0,
+    "status": "confirmed",
+    "sources": [
+     "liberty_pc3y",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 1 yr",
+    "catalog": 20.0,
+    "documents": 20.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 2 yr",
+    "catalog": 25.0,
+    "documents": 25.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 3 yr",
+    "catalog": 35.0,
+    "documents": 35.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 4 yr",
+    "catalog": 45.0,
+    "documents": 45.0,
+    "status": "confirmed",
+    "sources": [
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "RAT-NCB",
+    "parameter": "slab 5 yr",
+    "catalog": 50.0,
+    "documents": 50.0,
+    "status": "confirmed",
+    "sources": [
+     "usgi_pc"
+    ]
+   },
+   {
+    "rule": "CLM-TOTAL-LOSS",
+    "parameter": "threshold ",
+    "catalog": 75.0,
+    "documents": 75.0,
+    "status": "confirmed",
+    "sources": [
+     "bajaj_addons",
+     "raheja_pc",
+     "usgi_pc"
+    ]
+   }
+  ],
+  "model_calls": 126,
+  "tokens": {
+   "input": 215554,
+   "output": 22194
+  }
+ },
+ {
+  "extractor": "hybrid",
+  "score_vs_gold": {
+   "overall": {
+    "precision": 0.975,
+    "recall": 0.906,
+    "f1": 0.939,
+    "true_pos": 77,
+    "predicted": 79,
+    "gold": 85
+   },
+   "tables": {
+    "precision": 1.0,
+    "recall": 0.956,
+    "f1": 0.977,
+    "true_pos": 65,
+    "predicted": 65,
+    "gold": 68
+   },
+   "clauses": {
+    "precision": 0.857,
+    "recall": 0.706,
+    "f1": 0.774,
+    "true_pos": 12,
+    "predicted": 14,
+    "gold": 17
+   },
+   "missed": [
+    "('bajaj_addons', 'zero_dep_claim_limit', 'max_claims', 2.0)",
+    "('bajaj_addons', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('iffco_nildep', 'zero_dep_claim_limit', 'max_claims', 1.0)",
+    "('iffco_nildep', 'zero_dep_condition', 'deductible_applies', True)",
+    "('liberty_pc3y', 'parts_depreciation', 'paint_material', 50.0)",
+    "('raheja_pc', 'parts_depreciation', 'paint_material', 50.0)",
+    "('raheja_pc', 'zero_dep_condition', 'deductible_applies', True)",
+    "('usgi_pc', 'parts_depreciation', 'paint_material', 50.0)"
+   ],
+   "extra": [
+    "('iffco_nildep', 'zero_dep_condition', 'authorised_garage_required', True)",
+    "('usgi_pc', 'zero_dep_condition', 'excludes_total_loss', True)"
+   ]
+  }
+ }
+]

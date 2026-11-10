@@ -1,0 +1,245 @@
+{
+ "summary": {
+  "parser": "rule-based (offline)",
+  "requests": 12,
+  "k": 1,
+  "understanding_accuracy": 0.25,
+  "pass_hat_k": 0.25,
+  "impact_graph_precision": 0.827,
+  "impact_graph_recall": 0.858,
+  "impact_full_precision": 0.834,
+  "impact_full_recall": 0.917,
+  "tokens_in": 0,
+  "tokens_out": 0
+ },
+ "rows": [
+  {
+   "id": "B01",
+   "kind": "new_addon",
+   "runs_correct": 1,
+   "k": 1,
+   "errors": [],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B02",
+   "kind": "new_addon",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "max_car_age_years: got 5.0, expected 3",
+     "claim_limit_per_year: got 2, expected 1"
+    ]
+   ],
+   "graph_precision": 0.846,
+   "graph_recall": 0.846,
+   "full_precision": 0.867,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B03",
+   "kind": "new_addon",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "price_pct_of_od: got 0.15, expected 0.08",
+     "claim_limit_per_year: got 2, expected 1",
+     "allow_midterm: got False, expected True"
+    ]
+   ],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B04",
+   "kind": "new_addon",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "max_car_age_years: got 5.0, expected 7",
+     "allow_midterm: got True, expected False"
+    ]
+   ],
+   "graph_precision": 0.846,
+   "graph_recall": 0.846,
+   "full_precision": 0.867,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B05",
+   "kind": "new_addon",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "claim_limit_per_year: got 2, expected 1"
+    ]
+   ],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B06",
+   "kind": "modify_parameter",
+   "runs_correct": 1,
+   "k": 1,
+   "errors": [],
+   "graph_precision": 0.6,
+   "graph_recall": 0.75,
+   "full_precision": 0.6,
+   "full_recall": 0.75,
+   "missed": [
+    "DOC-SCHEDULE"
+   ],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B07",
+   "kind": "modify_parameter",
+   "runs_correct": 1,
+   "k": 1,
+   "errors": [],
+   "graph_precision": 0.6,
+   "graph_recall": 0.75,
+   "full_precision": 0.6,
+   "full_recall": 0.75,
+   "missed": [
+    "DOC-SCHEDULE"
+   ],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B08",
+   "kind": "modify_parameter",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "kind: got new_addon, expected modify_parameter"
+    ]
+   ],
+   "graph_precision": 1.0,
+   "graph_recall": 1.0,
+   "full_precision": 1.0,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": []
+  },
+  {
+   "id": "B09",
+   "kind": "modify_parameter",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "kind: got new_addon, expected modify_parameter"
+    ]
+   ],
+   "graph_precision": 0.833,
+   "graph_recall": 1.0,
+   "full_precision": 0.833,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "DOC-WORDING"
+   ]
+  },
+  {
+   "id": "B10",
+   "kind": "modify_parameter",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "kind: got new_addon, expected modify_parameter"
+    ]
+   ],
+   "graph_precision": 0.6,
+   "graph_recall": 1.0,
+   "full_precision": 0.6,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B11",
+   "kind": "modify_parameter",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "kind: got new_addon, expected modify_parameter"
+    ]
+   ],
+   "graph_precision": 1.0,
+   "graph_recall": 1.0,
+   "full_precision": 1.0,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": []
+  },
+  {
+   "id": "B12",
+   "kind": "modify_parameter",
+   "runs_correct": 0,
+   "k": 1,
+   "errors": [
+    [
+     "kind: got new_addon, expected modify_parameter"
+    ]
+   ],
+   "graph_precision": 1.0,
+   "graph_recall": 0.5,
+   "full_precision": 1.0,
+   "full_recall": 0.5,
+   "missed": [
+    "REN-AGE"
+   ],
+   "extra": []
+  }
+ ]
+}

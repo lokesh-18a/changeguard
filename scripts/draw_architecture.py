@@ -52,24 +52,24 @@ arrow([(C(3) + CW/2, ya + ha), (C(3) + CW/2, 285), (C(2) + CW/2, 285), (C(2) + C
 
 # ---- knowledge stores
 ys, hs = 325, 78
-box(C(1), ys, CW, hs, "store", "Clause index", ["SQLite FTS5"], cyl=True)
-box(C(2), ys, CW * 2 + 28, hs, "store", "Rule catalog", ["versioned, every rule with its source quote"], cyl=True)
+box(C(1), ys, CW, hs, "store", "Extracted facts", ["JSON, each with", "its verbatim quote"], cyl=True)
+box(C(2), ys, CW * 2 + 28, hs, "store", "Rule catalog", ["23 rules, numbers checked against the documents"], cyl=True)
 arrow([(C(1) + CW/2, ya + ha), (C(1) + CW/2, ys)])
 arrow([(C(5) + CW/2, ya + ha), (C(5) + CW/2, ys + hs/2), (C(2) + CW*2 + 28, ys + hs/2)])
 
 # ---- Lane B
-panel(395, 425, 1130, 360, "B · Change pipeline", "per change request, about a minute", dashed=True, size=14)
+panel(395, 425, 1130, 360, "B · Change pipeline", "per change request, a few seconds", dashed=True, size=14)
 y1, y2, hb = 495, 650, 92
-box(C(0), y1, CW, hb, "code", "FastAPI + MCP", ["typed Pydantic", "contracts"])
+box(C(0), y1, CW, hb, "code", "MCP server + CLI", ["typed Pydantic", "contracts"])
 box(C(1), y1, CW, hb, "ai", "Planner", ["request to a", "structured change"])
-box(C(2), y1, CW, hb, "code", "Retriever", ["rules and the source", "clauses to cite"])
+box(C(2), y1, CW, hb, "code", "Catalog validator", ["applies the change,", "checks every path"])
 box(C(3), y1, CW, hb, "code", "Impact analyst", ["graph walk, a path", "for every rule"])
 box(C(4), y1, CW, hb, "code", "Conflict checker", ["generic checks for", "hidden gaps"])
 box(C(5), y1, CW, hb, "code", "Test designer", ["boundary and", "equivalence cases"])
 for i in range(5):
     arrow([(C(i) + CW, y1 + hb/2), (C(i + 1), y1 + hb/2)])
 box(C(5), y2, CW, hb, "code", "Oracle and runner", ["exact expected", "versus actual"])
-box(C(4), y2, CW, hb, "code", "Mutation auditor", ["how many planted", "bugs the tests catch"])
+box(C(4), y2, CW, hb, "code", "Mutation auditor", ["injects random defects,", "counts the catches"])
 box(C(3), y2, CW, hb, "ai", "Writer", ["verdict and report", "with citations"])
 box(C(2), y2, CW, hb, "code", "Critic", ["every claim cites a real", "ID, every number matches"])
 arrow([(C(5) + CW/2, y1 + hb), (C(5) + CW/2, y2)])
@@ -86,7 +86,7 @@ arrow([(C(1) + CW/2, y2 + 12), (C(1) + CW/2, y1 + hb + 2)], dash=True)
 
 # ---- bottom stores
 yb, hbm = 905, 82
-box(C(0), yb, CW * 2 + 28, hbm, "store", "SQLite", ["runs, audit log with hashes, token ledger"], cyl=True)
+box(C(0), yb, CW * 2 + 28, hbm, "store", "Run log", ["agent trace, token ledger, evidence pack"], cyl=True)
 box(C(4), yb, CW * 2 + 28, hbm, "ext", "Amazon Bedrock", ["Amazon Nova, called only by the", "3 blue agents; swappable provider"])
 arrow([(C(0) + CW/2, y1 + hb), (C(0) + CW/2, yb)], label="every step logged", lx=C(0) + CW/2 + 8, ly=850, anchor="start")
 
@@ -97,13 +97,13 @@ box(30, 505, 205, 70, "code", "Web UI", ["Streamlit"])
 box(30, 610, 205, 70, "code", "External agents", ["any MCP client"])
 arrow([(235, 240), (C(0), 240)])
 arrow([(132, 458), (132, 505)])
-arrow([(235, 528), (C(0), 528)], label="REST", lx=322, ly=520)
+arrow([(235, 528), (C(0), 528)], label="Python", lx=322, ly=520)
 arrow([(235, 645), (330, 645), (330, 565), (C(0), 565)], label="MCP", lx=340, ly=602, anchor="start")
 
 # ---- OUTPUT
 box(1570, 640, 200, 70, "code", "Release verdict", ["with cited report"])
 box(1570, 735, 200, 80, "code", "Evidence pack", ["Excel: impact, conflicts,", "tests, traceability"])
-box(1570, 905, 200, 82, "store", "Audit trail", ["hashed and", "reproducible"])
+box(1570, 905, 200, 82, "store", "Audit trail", ["seeded runs,", "reproducible"])
 box(1570, 840, 200, 42, "human", "Analyst signs off", rx=21)
 arrow([(C(2) + CW/2, y2 + hb), (C(2) + CW/2, 805), (1540, 805), (1540, 675), (1570, 675)])
 arrow([(1540, 775), (1570, 775)])

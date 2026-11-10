@@ -1,9 +1,9 @@
 __pycache__/
 *.pyc
 .venv/
+venv/
 out/
 .env
 .pytest_cache/
-venv/
 data/sources/
-data/sources/
+.streamlit/secrets.toml

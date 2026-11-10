@@ -1,0 +1,205 @@
+{
+ "summary": {
+  "parser": "Amazon Nova",
+  "requests": 12,
+  "k": 3,
+  "understanding_accuracy": 1.0,
+  "pass_hat_k": 1.0,
+  "impact_graph_precision": 0.827,
+  "impact_graph_recall": 0.858,
+  "impact_full_precision": 0.834,
+  "impact_full_recall": 0.917,
+  "tokens_in": 73182,
+  "tokens_out": 3447
+ },
+ "rows": [
+  {
+   "id": "B01",
+   "kind": "new_addon",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B02",
+   "kind": "new_addon",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.846,
+   "graph_recall": 0.846,
+   "full_precision": 0.867,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B03",
+   "kind": "new_addon",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B04",
+   "kind": "new_addon",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.846,
+   "graph_recall": 0.846,
+   "full_precision": 0.867,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B05",
+   "kind": "new_addon",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.867,
+   "graph_recall": 0.867,
+   "full_precision": 0.882,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B06",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.6,
+   "graph_recall": 0.75,
+   "full_precision": 0.6,
+   "full_recall": 0.75,
+   "missed": [
+    "DOC-SCHEDULE"
+   ],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B07",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.6,
+   "graph_recall": 0.75,
+   "full_precision": 0.6,
+   "full_recall": 0.75,
+   "missed": [
+    "DOC-SCHEDULE"
+   ],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B08",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 1.0,
+   "graph_recall": 1.0,
+   "full_precision": 1.0,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": []
+  },
+  {
+   "id": "B09",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.833,
+   "graph_recall": 1.0,
+   "full_precision": 0.833,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "DOC-WORDING"
+   ]
+  },
+  {
+   "id": "B10",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 0.6,
+   "graph_recall": 1.0,
+   "full_precision": 0.6,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": [
+    "CLM-NCB-RESET",
+    "RAT-NCB"
+   ]
+  },
+  {
+   "id": "B11",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 1.0,
+   "graph_recall": 1.0,
+   "full_precision": 1.0,
+   "full_recall": 1.0,
+   "missed": [],
+   "extra": []
+  },
+  {
+   "id": "B12",
+   "kind": "modify_parameter",
+   "runs_correct": 3,
+   "k": 3,
+   "errors": [],
+   "graph_precision": 1.0,
+   "graph_recall": 0.5,
+   "full_precision": 1.0,
+   "full_recall": 0.5,
+   "missed": [
+    "REN-AGE"
+   ],
+   "extra": []
+  }
+ ]
+}

@@ -4,6 +4,15 @@
 
 Built for the Flarre AI Innovation Challenge 2026.
 
+| | |
+|---|---|
+| **Live prototype** | https://changeguard-flarre.streamlit.app |
+| **Architecture** | [docs/architecture.png](docs/architecture.png) |
+| **Measured results** | "Measured results" page of the prototype, data in [`data/measured/`](data/measured) |
+| **Run it yourself** | `pip install -r requirements.txt` then `streamlit run app.py` (no AWS needed) |
+
+![ChangeGuard architecture](docs/architecture.png)
+
 ## What it does
 
 ```
@@ -89,6 +98,16 @@ python -m changeguard.benchmark --k 3       # Amazon Nova, 3 runs each: accuracy
 | `changeguard/llm.py` | Amazon Bedrock (Nova) calls, with offline fallback and token logging |
 | `changeguard/pipeline.py` | Orchestrates the five agents |
 | `changeguard/export.py` | Excel and Markdown evidence pack |
+
+## Web app and live deployment
+
+`streamlit run app.py` opens the prototype: run a change, see the agent trace, impact graph, conflicts,
+tests, the random-defect audit and the report, and download the Excel evidence pack. The "Measured results"
+page shows the benchmark numbers from `data/measured/` (Nova runs on Amazon Bedrock).
+
+The live site runs on Streamlit Community Cloud; see [docs/DEPLOY.md](docs/DEPLOY.md). AWS keys live only in
+the host's secrets store. On a public site Nova use is capped (10 runs per visitor, 300 per day) and requests
+are limited to 600 characters; after that the rule-based parser takes over.
 
 ## Roadmap
 
