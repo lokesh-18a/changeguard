@@ -14,6 +14,20 @@ FILL = PatternFill("solid", fgColor="1F3A5F")
 RED = PatternFill("solid", fgColor="F8D7DA")
 GREEN = PatternFill("solid", fgColor="D4EDDA")
 AMBER = PatternFill("solid", fgColor="FFF3CD")
+LINK_FILL = PatternFill("solid", fgColor="E6F3F2")
+LINKS = [("Live prototype", "https://changeguard-flarre.streamlit.app"),
+         ("Source code (GitHub)", "https://github.com/lokesh-18a/changeguard")]
+
+
+def add_links(ws, at_row: int = 2) -> None:
+    """Puts the live prototype and GitHub links, highlighted and clickable, at the top of a sheet."""
+    ws.insert_rows(at_row, len(LINKS))
+    for i, (label, url) in enumerate(LINKS):
+        a, b = ws.cell(at_row + i, 1, label), ws.cell(at_row + i, 2, url)
+        b.hyperlink = url
+        a.font = Font(bold=True, color="0B6E69")
+        b.font = Font(bold=True, color="0B6E69", underline="single")
+        a.fill = b.fill = LINK_FILL
 
 
 def _sheet(wb, title, headers, rows, widths):
@@ -51,6 +65,7 @@ def to_excel(rep: RunReport, path: Path) -> Path:
         ["Report checked by critic", rep.critic.get("final", "")],
         ["Language model", rep.backend],
     ], [34, 90])
+    add_links(ws)
 
     _sheet(wb, "Impact", ["Rule", "Area", "Name", "Status", "Distance", "Why (dependency path)"],
            [[i.rule_id, i.area, i.name, i.status, i.distance, rep.paths[i.rule_id]] for i in rep.impact],

@@ -4,6 +4,8 @@
 
 Built for the Flarre AI Innovation Challenge 2026.
 
+### ▶ [Open the live prototype: changeguard-flarre.streamlit.app](https://changeguard-flarre.streamlit.app) · [Source code: github.com/lokesh-18a/changeguard](https://github.com/lokesh-18a/changeguard)
+
 | | |
 |---|---|
 | **Live prototype** | https://changeguard-flarre.streamlit.app |
