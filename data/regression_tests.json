@@ -1,0 +1,224 @@
+{
+ "note": "Existing regression suite, expected values from product v1.0",
+ "tests": [
+  {
+   "id": "RT-01",
+   "title": "Quote: 3-year-old car with roadside assistance",
+   "kind": "quote",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "RAT-IDV",
+    "RAT-OD-PREM",
+    "RAT-TOTAL",
+    "RAT-GST"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 1,
+    "car_age": 3.0,
+    "addons": [
+     "RSA"
+    ]
+   },
+   "expected": {
+    "total_premium": 20125,
+    "rejected_addons": [],
+    "addon_premiums": {
+     "RSA": 199
+    }
+   }
+  },
+  {
+   "id": "RT-02",
+   "title": "Quote: 12-year-old car, 1,600 cc engine",
+   "kind": "quote",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "RAT-IDV",
+    "RAT-OD-RATE",
+    "RAT-TP-PREM"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1600,
+    "claim_free_years": 1,
+    "car_age": 12.0
+   },
+   "expected": {
+    "total_premium": 19589,
+    "rejected_addons": [],
+    "addon_premiums": {}
+   }
+  },
+  {
+   "id": "RT-03",
+   "title": "Quote: brand-new car, no NCB",
+   "kind": "quote",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "RAT-IDV",
+    "RAT-NCB"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 0,
+    "car_age": 0.3
+   },
+   "expected": {
+    "total_premium": 30935,
+    "rejected_addons": [],
+    "addon_premiums": {}
+   }
+  },
+  {
+   "id": "RT-04",
+   "title": "Claim: bumper and door on a 3.5-year-old car",
+   "kind": "claim",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "CLM-DEP-PARTS",
+    "CLM-DEDUCT",
+    "CLM-PAYOUT"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 1,
+    "car_age": 3.5,
+    "cause": "accident",
+    "parts": [
+     {
+      "name": "front bumper",
+      "type": "plastic",
+      "cost": 10000
+     },
+     {
+      "name": "left door",
+      "type": "metal",
+      "cost": 20000
+     }
+    ]
+   },
+   "expected": {
+    "payout": 19000,
+    "depreciation": 10000,
+    "total_loss": false
+   }
+  },
+  {
+   "id": "RT-05",
+   "title": "Claim: 1,600 cc car pays the higher deductible",
+   "kind": "claim",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "CLM-DEDUCT",
+    "CLM-PAYOUT"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1600,
+    "claim_free_years": 1,
+    "car_age": 2.0,
+    "cause": "accident",
+    "parts": [
+     {
+      "name": "front bumper",
+      "type": "plastic",
+      "cost": 10000
+     },
+     {
+      "name": "left door",
+      "type": "metal",
+      "cost": 20000
+     }
+    ]
+   },
+   "expected": {
+    "payout": 21000,
+    "depreciation": 7000,
+    "total_loss": false
+   }
+  },
+  {
+   "id": "RT-06",
+   "title": "Claim: repair above 75% of IDV is a total loss",
+   "kind": "claim",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "CLM-TOTAL-LOSS",
+    "CLM-PAYOUT"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 1,
+    "car_age": 6.0,
+    "cause": "accident",
+    "parts": [
+     {
+      "name": "body shell",
+      "type": "metal",
+      "cost": 300000
+     }
+    ]
+   },
+   "expected": {
+    "payout": 359000,
+    "depreciation": 0,
+    "total_loss": true
+   }
+  },
+  {
+   "id": "RT-07",
+   "title": "Renewal: claim-free year raises NCB",
+   "kind": "renewal",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "REN-AGE",
+    "RAT-NCB"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 2,
+    "car_age": 4.5,
+    "had_claim": false
+   },
+   "expected": {
+    "addon_retained": false,
+    "ncb_pct": 0.35
+   }
+  },
+  {
+   "id": "RT-08",
+   "title": "Renewal: a claim resets NCB to zero",
+   "kind": "renewal",
+   "technique": "existing regression test",
+   "requirement": "existing",
+   "rules": [
+    "REN-AGE",
+    "CLM-NCB-RESET"
+   ],
+   "inputs": {
+    "ex_showroom_price": 800000,
+    "engine_cc": 1200,
+    "claim_free_years": 2,
+    "car_age": 4.5,
+    "had_claim": true
+   },
+   "expected": {
+    "addon_retained": false,
+    "ncb_pct": 0.0
+   }
+  }
+ ]
+}
